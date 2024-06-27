@@ -2,13 +2,14 @@
 
 Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de estudo e aprendizado de novas tecnologias.
 
-## Tecnologias Utilizadas
+## Tecnologias utilizadas
 - SQL 🛠️
 - MySQL 🛠️
 - Lombok
 - Log4j2
 - Maven
 - Java
+- Mapstruct 🛠️
 - JPA 🛠️
 - Hibernate 🛠️
 - JPQL 🛠️
@@ -16,5 +17,11 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Junit5 🛠️
 - Mockito 🛠️
 - Docker (Container MySQL) 🛠️
+
+## Design Patterns utilizados
+- Builder
+- DTO
+- MVC
+- Repository
 
 
