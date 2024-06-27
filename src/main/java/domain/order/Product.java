@@ -13,7 +13,7 @@ import java.util.UUID;
 public final class Product {
     @NonFinal
     UUID id;
-     String name;
-     BigDecimal unitPrice;
+    String name;
+    BigDecimal unitPrice;
     Category category;
 }
