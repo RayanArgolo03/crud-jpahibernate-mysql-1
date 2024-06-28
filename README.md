@@ -9,7 +9,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Log4j2
 - Maven
 - Java
-- Mapstruct 🛠️
+- Mapstruct
 - JPA 🛠️
 - Hibernate 🛠️
 - JPQL 🛠️
