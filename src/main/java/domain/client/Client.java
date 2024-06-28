@@ -1,20 +1,21 @@
 package domain.client;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import lombok.experimental.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Builder
-@Getter
+
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Getter
 public final class Client {
+
     @NonFinal
+    @Setter
     UUID id;
-    String username;
-    String name;
-    String password;
-    String cpf;
+
+    String username, name, password, cpf;
+    LocalDateTime createdAt;
 }

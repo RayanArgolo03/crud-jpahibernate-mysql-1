@@ -1,6 +1,5 @@
 package utils;
 
-import enums.Option;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,14 +13,16 @@ import java.util.Scanner;
 public final class ReaderUtils {
     static Scanner sc = new Scanner(System.in);
 
-    public static Option readOption() {
+    public static <E extends Enum<E>> E readEnum(Class<E> enumClass) {
 
-        for (Option o : Option.values()) System.out.printf("%d - %s\n", o.getId(), o);
+        E[] enums = enumClass.getEnumConstants();
+        for (E e : enums) System.out.printf("%d - %s\n", (e.ordinal() + 1), e);
+
         System.out.print("Your choice: ");
-
         final int choice = readInt();
-        return Arrays.stream(Option.values())
-                .filter(o -> o.getId() == choice)
+
+        return Arrays.stream(enums)
+                .filter(e -> (e.ordinal() + 1) == choice)
                 .findFirst()
                 .orElseThrow(InputMismatchException::new);
     }
@@ -31,7 +32,7 @@ public final class ReaderUtils {
     }
 
     public static String readString(final String title) {
-        System.out.printf("Enter with %s:", title);
+        System.out.printf("Enter with %s: ", title);
         return sc.next();
     }
 

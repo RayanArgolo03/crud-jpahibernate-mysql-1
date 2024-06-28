@@ -11,6 +11,6 @@ import java.util.UUID;
 public final class OrderItem {
     @NonFinal
     UUID id;
-     Product product;
-     int quantity;
+    Product product;
+    int quantity;
 }

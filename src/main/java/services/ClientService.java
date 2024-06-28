@@ -1,12 +1,12 @@
 package services;
 
-import dtos.input.ClientInputDTO;
-import dtos.output.ClientOutputDTO;
+import domain.client.Client;
+import dtos.ClientOutputDTO;
 import exceptions.ClientException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import repositories.ClientRepository;
+import repositories.interfaces.ClientRepository;
 
 import java.util.Objects;
 
@@ -15,7 +15,6 @@ import java.util.Objects;
 public final class ClientService {
 
     ClientRepository repository;
-    //Mapper here
 
     public void findUsername(final String username) {
         //Se existir, estoure exceptio
@@ -48,23 +47,18 @@ public final class ClientService {
         }
     }
 
-    public ClientInputDTO buildInput(final String username,
-                                     final String password,
-                                     final String name,
-                                     final String cpf) {
-        return ClientInputDTO.builder()
-                .username(username)
-                .password(password)
-                .name(name)
-                .cpf(cpf)
-                .build();
+    public void saveClient(final Client client) {
+        Objects.requireNonNull(client, "Client can´t be null! Problem in mapping");
+        repository.save(client);
     }
 
-    public ClientOutputDTO saveClient(final ClientInputDTO clientInputDTO) {
-        //Mapeia de input pra concreto com Mapstruct
-        //Salva concreto no database chamando repo
-        //retorna concreto mapeado pra output
-        return null;
+    public Client findClientUserInfo(final String username, final String password) {
+
+        Objects.requireNonNull(username, "Username can´t be null! Problem in mapping");
+        Objects.requireNonNull(password, "Password can´t be null! Problem in mapping");
+
+        return repository.findUserClient(username, password)
+                .orElseThrow(() -> new ClientException("Client not found!"));
     }
 
 }
