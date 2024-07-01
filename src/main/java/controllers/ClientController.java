@@ -1,8 +1,8 @@
 package controllers;
 
 import domain.client.Client;
-import dtos.ClientInputDTO;
-import dtos.ClientOutputDTO;
+import dtos.input.ClientInputDTO;
+import dtos.output.ClientOutputDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,9 +22,9 @@ public final class ClientController {
     ClientService service;
     ClientMapper mapper;
 
-    public ClientOutputDTO create() {
+    public Client create() {
 
-        log.info("New user informations.. \n");
+        log.info("Create client account: New user informations.. \n");
 
         final String username = readString("username");
         service.findUsername(username);
@@ -32,7 +32,7 @@ public final class ClientController {
         final String password = readString("password (with more than 3 characters)");
         service.validatePassword(password);
 
-        log.info("Your informations! \n");
+        log.info("Create client account: Client informations.. \n");
         String name = readString("name (without special characters and with more than 3 characters)");
         name = service.validateAndFormatName(name);
 
@@ -45,16 +45,20 @@ public final class ClientController {
         service.saveClient(client);
         System.out.println();
 
-        return mapper.clientToOutput(client);
+        log.info("{} online!", mapper.clientToOutput(client));
+
+        return client;
     }
 
-    public ClientOutputDTO login() {
+    public Client login() {
 
         final String username = readString("username");
         final String password = readString("password");
 
         final Client client = service.findClientUserInfo(username, password);
-        return mapper.clientToOutput(client);
+        log.info("{} online!", mapper.clientToOutput(client));
+
+        return client;
     }
 
 }

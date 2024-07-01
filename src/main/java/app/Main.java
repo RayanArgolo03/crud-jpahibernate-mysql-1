@@ -1,16 +1,24 @@
 package app;
 
 import controllers.ClientController;
-import dtos.ClientOutputDTO;
+import controllers.OrderController;
+import controllers.ProductController;
+import domain.client.Client;
 import enums.ClientOption;
 import enums.MenuOption;
+import exceptions.ProductException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
 import mappers.interfaces.ClientMapper;
+import mappers.interfaces.OrderMapper;
 import repositories.impl.ClientRepositoryImpl;
+import repositories.impl.OrderRepositoryImpl;
+import repositories.impl.ProductRepositoryImpl;
 import services.ClientService;
+import services.OrderService;
+import services.ProductService;
 
 import java.util.InputMismatchException;
 
@@ -23,56 +31,71 @@ public final class Main {
     static ClientController clientController = new ClientController(
             new ClientService(new ClientRepositoryImpl()), ClientMapper.INSTANCE
     );
+    static OrderController orderController = new OrderController(
+            new OrderService(new OrderRepositoryImpl()), OrderMapper.INSTANCE
+    );
+    static ProductController productController = new ProductController(
+            new ProductService(new ProductRepositoryImpl())
+    );
+
 
     public static void main(String[] args) {
 
-        try {
-            loop:
-            do {
+        productController.addAll();
+
+        loop:
+        do {
+            try {
+
                 switch (readEnum(MenuOption.class)) {
                     case CREATE_CLIENT -> clientMenu(clientController.create());
-                    case LOGIN -> {
-                        clientMenu(clientController.login());
-                    }
+                    case LOGIN -> clientMenu(clientController.login());
                     case OUT -> {
                         log.info("Thanks for the use :)");
                         break loop;
                     }
                 }
-            } while (true);
+            } catch (InputMismatchException e) {
+                log.error("Input data error, stopping the program.. Thanks for the use");
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
 
-        } catch (InputMismatchException e) {
-            log.error("Input data error, stopping the program.. Thanks for the use");
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        } while (true);
+
     }
 
-    public static void clientMenu(final ClientOutputDTO outputDTO) {
 
-        //Print if is a new client or not
-        log.info("Welcome {}", outputDTO);
+    public static void clientMenu(final Client client) {
 
-        try {
-            do {
+        log.info("\nWelcome Sr/a {}", client.getName());
+
+        do {
+            try {
+
                 switch (readEnum(ClientOption.class)) {
-                    case SHOW_ORDERS -> {
-                        //Todo
-                    }
-                    case PLACE_AN_ORDER -> {
-                    }
+                    case SHOW_ORDERS -> orderController.findAll(client).forEach(System.out::println);
+                    case PLACE_AN_ORDER -> orderController.create(client, productController.findAll());
                     case LOGOUT -> {
+                        log.info("{} has left the system!", client);
                         return;
                     }
                 }
-            } while (true);
 
-        } catch (InputMismatchException e) {
-            log.error("Input data error, stopping the program.. Thanks for the use");
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+            }
+            catch (ProductException e) {
+                log.info(e.getMessage());
+                System.exit(0);
+            }
+            catch (InputMismatchException | IndexOutOfBoundsException e) {
+                log.error("Input data error, stopping the program.. Thanks for the use");
+            }
+            catch (Exception e) {
+                log.error(e.getMessage());
+            }
 
+        } while (true);
 
     }
+
 }

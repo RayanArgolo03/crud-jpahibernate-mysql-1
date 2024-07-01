@@ -15,7 +15,6 @@ public final class Client {
     @NonFinal
     @Setter
     UUID id;
-
     String username, name, password, cpf;
     LocalDateTime createdAt;
 }

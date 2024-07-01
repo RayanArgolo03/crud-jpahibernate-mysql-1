@@ -1,8 +1,8 @@
 package mappers.interfaces;
 
 import domain.client.Client;
-import dtos.ClientInputDTO;
-import dtos.ClientOutputDTO;
+import dtos.input.ClientInputDTO;
+import dtos.output.ClientOutputDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -16,7 +16,7 @@ public interface ClientMapper {
     Client inputToClient(ClientInputDTO inputDTO);
 
     @Mapping(target = "sinceDateFormatted", source = "createdAt", dateFormat = "dd/MM/yyyy")
-    @Mapping(target = "clientName", source = "name")
+    @Mapping(target = "clientUsername", source = "username")
     ClientOutputDTO clientToOutput(Client client);
 
 }

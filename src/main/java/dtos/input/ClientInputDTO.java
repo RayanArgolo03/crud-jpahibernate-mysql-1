@@ -1,4 +1,4 @@
-package dtos;
+package dtos.input;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

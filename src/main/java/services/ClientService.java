@@ -1,7 +1,6 @@
 package services;
 
 import domain.client.Client;
-import dtos.ClientOutputDTO;
 import exceptions.ClientException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
