@@ -14,7 +14,7 @@ public final class ReaderUtils {
 
     public static <E extends Enum<E>> E readEnum(Class<E> enumClass) {
 
-        E[] enums = enumClass.getEnumConstants();
+        final E[] enums = enumClass.getEnumConstants();
         for (E e : enums) System.out.printf("%d - %s\n", (e.ordinal() + 1), e);
 
         return enums[readInt("your choice") - 1];
@@ -23,7 +23,7 @@ public final class ReaderUtils {
     public static <T> T readElement(final List<T> elements) {
 
         elements.forEach(p -> {
-            System.out.printf("%d - %s", elements.indexOf(p) + 1, p);
+            System.out.printf("%d - %s\n", elements.indexOf(p) + 1, p);
         });
 
         return elements.get(readInt("Product to buy: ") - 1);

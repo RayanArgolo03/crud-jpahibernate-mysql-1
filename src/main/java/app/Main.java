@@ -28,36 +28,39 @@ import static utils.ReaderUtils.readEnum;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class Main {
-    static ClientController clientController = new ClientController(
+    static ClientController CLIENT_CONTROLLER = new ClientController(
             new ClientService(new ClientRepositoryImpl()), ClientMapper.INSTANCE
     );
-    static OrderController orderController = new OrderController(
+    static OrderController ORDER_CONTROLLER = new OrderController(
             new OrderService(new OrderRepositoryImpl()), OrderMapper.INSTANCE
     );
-    static ProductController productController = new ProductController(
+    static ProductController PRODUCT_CONTROLLER = new ProductController(
             new ProductService(new ProductRepositoryImpl())
     );
 
 
     public static void main(String[] args) {
 
-        productController.addAll();
+        //TODO use Jpql
+        PRODUCT_CONTROLLER.addAll();
 
         loop:
         do {
             try {
 
                 switch (readEnum(MenuOption.class)) {
-                    case CREATE_CLIENT -> clientMenu(clientController.create());
-                    case LOGIN -> clientMenu(clientController.login());
+                    case CREATE_CLIENT -> clientMenu(CLIENT_CONTROLLER.create());
+                    case LOGIN -> clientMenu(CLIENT_CONTROLLER.login());
                     case OUT -> {
                         log.info("Thanks for the use :)");
                         break loop;
                     }
                 }
-            } catch (InputMismatchException e) {
+            }
+            catch (InputMismatchException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 log.error(e.getMessage());
             }
 
@@ -74,8 +77,8 @@ public final class Main {
             try {
 
                 switch (readEnum(ClientOption.class)) {
-                    case SHOW_ORDERS -> orderController.findAll(client).forEach(System.out::println);
-                    case PLACE_AN_ORDER -> orderController.create(client, productController.findAll());
+                    case SHOW_ORDERS -> ORDER_CONTROLLER.findAll(client).forEach(System.out::println);
+                    case PLACE_AN_ORDER -> ORDER_CONTROLLER.create(client, PRODUCT_CONTROLLER.findAll());
                     case LOGOUT -> {
                         log.info("{} has left the system!", client);
                         return;
