@@ -1,6 +1,6 @@
 package enums;
 
 public enum MenuOption {
-    CREATE_CLIENT, LOGIN, OUT;
+    SHOW_PRODUCTS, CREATE_CLIENT, LOGIN, OUT;
 }
 

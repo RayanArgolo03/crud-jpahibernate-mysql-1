@@ -41,14 +41,19 @@ public final class Main {
 
     public static void main(String[] args) {
 
+        //Todo continue JPA e Hibernate, adicione Docker pro MYSQL
+
         //TODO use Jpql
         PRODUCT_CONTROLLER.addAll();
+        log.info("This application use two databases: H2 and MySQL. The CRUD logic is in MySQL");
 
         loop:
         do {
             try {
 
                 switch (readEnum(MenuOption.class)) {
+                    //Todo mostra produtos no H2 e no MySQL
+                    case SHOW_PRODUCTS -> {}
                     case CREATE_CLIENT -> clientMenu(CLIENT_CONTROLLER.create());
                     case LOGIN -> clientMenu(CLIENT_CONTROLLER.login());
                     case OUT -> {
@@ -77,6 +82,7 @@ public final class Main {
             try {
 
                 switch (readEnum(ClientOption.class)) {
+
                     case SHOW_ORDERS -> ORDER_CONTROLLER.findAll(client).forEach(System.out::println);
                     case PLACE_AN_ORDER -> ORDER_CONTROLLER.create(client, PRODUCT_CONTROLLER.findAll());
                     case LOGOUT -> {
