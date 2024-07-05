@@ -1,8 +1,8 @@
 package controllers;
 
-import domain.client.Client;
-import domain.order.Order;
-import domain.order.Product;
+import model.client.Client;
+import model.order.Order;
+import model.order.Product;
 import dtos.output.OrderOutputDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

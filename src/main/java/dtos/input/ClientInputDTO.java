@@ -12,5 +12,4 @@ import java.time.LocalDateTime;
 @Getter
 public class ClientInputDTO {
     String username, name, password, cpf;
-    LocalDateTime creationDate;
 }

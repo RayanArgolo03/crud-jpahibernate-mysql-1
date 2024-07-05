@@ -1,6 +1,6 @@
 package repositories.interfaces;
 
-import domain.order.Product;
+import model.order.Product;
 
 import java.util.List;
 

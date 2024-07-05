@@ -1,6 +1,6 @@
 package repositories.interfaces;
 
-import domain.order.Order;
+import model.order.Order;
 
 import java.util.Set;
 import java.util.UUID;

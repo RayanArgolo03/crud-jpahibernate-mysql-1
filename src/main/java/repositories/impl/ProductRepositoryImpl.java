@@ -1,6 +1,6 @@
 package repositories.impl;
 
-import domain.order.Product;
+import model.order.Product;
 import repositories.interfaces.ProductRepository;
 
 import java.util.List;

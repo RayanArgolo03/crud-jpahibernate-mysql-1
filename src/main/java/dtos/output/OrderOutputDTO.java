@@ -1,11 +1,10 @@
 package dtos.output;
 
-import domain.order.OrderItem;
+import model.order.OrderItem;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 import java.util.Set;
 
 @AllArgsConstructor

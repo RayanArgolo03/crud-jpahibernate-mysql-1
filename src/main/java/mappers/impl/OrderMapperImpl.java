@@ -1,17 +1,17 @@
 package mappers.impl;
 
-import domain.order.Order;
-import domain.order.OrderItem;
 import dtos.output.OrderOutputDTO;
-import mappers.interfaces.OrderMapper;
-
-import javax.annotation.processing.Generated;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import javax.annotation.processing.Generated;
+
+import mappers.interfaces.OrderMapper;
+import model.order.Order;
+import model.order.OrderItem;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-07-01T16:58:47-0300",
+    date = "2024-07-05T14:47:59-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.6 (Oracle Corporation)"
 )
 public class OrderMapperImpl implements OrderMapper {

@@ -1,18 +1,15 @@
 package controllers;
 
-import domain.client.Client;
 import dtos.input.ClientInputDTO;
-import dtos.output.ClientOutputDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
 import mappers.interfaces.ClientMapper;
+import model.client.Client;
 import services.ClientService;
 
-import java.time.LocalDateTime;
-
-import static utils.ReaderUtils.*;
+import static utils.ReaderUtils.readString;
 
 @Log4j2
 @AllArgsConstructor
@@ -39,7 +36,7 @@ public final class ClientController {
         final String cpf = readString("cpf (pattern XXX.XXX.XXX-XX with dots and dash)");
         service.validateCpf(cpf);
 
-        final ClientInputDTO inputDTO = new ClientInputDTO(username, name, password, cpf, LocalDateTime.now());
+        final ClientInputDTO inputDTO = new ClientInputDTO(username, name, password, cpf);
         final Client client = mapper.inputToClient(inputDTO);
 
         service.saveClient(client);

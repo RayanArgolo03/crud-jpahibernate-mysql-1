@@ -1,6 +1,6 @@
 package services;
 
-import domain.client.Client;
+import model.client.Client;
 import exceptions.ClientException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -48,6 +48,7 @@ public final class ClientService {
 
     public void saveClient(final Client client) {
         Objects.requireNonNull(client, "Client can´t be null! Problem in mapping");
+        //Todo tem que setar UUI no banco de dados
         repository.save(client);
     }
 

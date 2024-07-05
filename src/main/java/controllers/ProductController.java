@@ -1,6 +1,6 @@
 package controllers;
 
-import domain.order.Product;
+import model.order.Product;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;

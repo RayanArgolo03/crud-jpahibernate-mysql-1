@@ -1,9 +1,9 @@
 package services;
 
-import domain.client.Client;
-import domain.order.Order;
-import domain.order.OrderItem;
-import domain.order.Product;
+import model.client.Client;
+import model.order.Order;
+import model.order.OrderItem;
+import model.order.Product;
 import enums.Category;
 import enums.ContinueOption;
 import exceptions.OrderException;
@@ -38,7 +38,6 @@ public final class OrderService {
 
     public Order placeOrder(final Client client, final List<Product> products) {
 
-
         //Keeps the purchase order with LinkedHashSet
         final Set<OrderItem> orderItems = new LinkedHashSet<>();
 
@@ -52,7 +51,7 @@ public final class OrderService {
                     .toList();
 
             Product product = readElement(productsToChoose);
-            int quantity = readInt("product quantity (only positive numbers less than 100");
+            int quantity = readInt("product quantity (only positive numbers less than 11");
             validateQuantity(quantity);
 
             OrderItem oi = createOrderItem(product, quantity);
@@ -84,8 +83,8 @@ public final class OrderService {
     }
 
     public void validateQuantity(int quantity) {
-        if (quantity < 0) throw new OrderException("Quantity is negative number!");
-        if (quantity > 100) throw new OrderException("Quantity is more than one hundred!");
+        if (quantity < 1) throw new OrderException("Quantity is negative number!");
+        if (quantity > 10) throw new OrderException("Quantity is more than 10!");
     }
 
     public void increasingQuantity(final OrderItem oi, final int quantity) {

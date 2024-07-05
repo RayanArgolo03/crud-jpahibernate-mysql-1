@@ -1,18 +1,18 @@
 package mappers.interfaces;
 
-import domain.client.Client;
 import dtos.input.ClientInputDTO;
 import dtos.output.ClientOutputDTO;
+import model.client.Client;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import static org.mapstruct.factory.Mappers.*;
+import static org.mapstruct.factory.Mappers.getMapper;
+
 
 @Mapper
 public interface ClientMapper {
     ClientMapper INSTANCE = getMapper(ClientMapper.class);
 
-    @Mapping(target = "createdAt", source = "creationDate")
     Client inputToClient(ClientInputDTO inputDTO);
 
     @Mapping(target = "sinceDateFormatted", source = "createdAt", dateFormat = "dd/MM/yyyy")

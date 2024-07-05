@@ -1,10 +1,9 @@
 package repositories.impl;
 
-import domain.client.Client;
+import model.client.Client;
 import repositories.interfaces.ClientRepository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public final class ClientRepositoryImpl implements ClientRepository {
     @Override

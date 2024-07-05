@@ -9,11 +9,10 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Getter
 public class ClientOutputDTO {
 
-    @Getter
     UUID id;
-    @Getter
     String clientUsername;
     String sinceDateFormatted;
 

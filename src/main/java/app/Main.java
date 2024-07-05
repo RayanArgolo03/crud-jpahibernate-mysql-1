@@ -3,7 +3,6 @@ package app;
 import controllers.ClientController;
 import controllers.OrderController;
 import controllers.ProductController;
-import domain.client.Client;
 import enums.ClientOption;
 import enums.MenuOption;
 import exceptions.ProductException;
@@ -13,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
 import mappers.interfaces.ClientMapper;
 import mappers.interfaces.OrderMapper;
+import model.client.Client;
 import repositories.impl.ClientRepositoryImpl;
 import repositories.impl.OrderRepositoryImpl;
 import repositories.impl.ProductRepositoryImpl;
@@ -41,8 +41,6 @@ public final class Main {
 
     public static void main(String[] args) {
 
-        //Todo continue JPA e Hibernate, adicione Docker pro MYSQL
-
         //TODO use Jpql
         PRODUCT_CONTROLLER.addAll();
         log.info("This application use two databases: H2 and MySQL. The CRUD logic is in MySQL");
@@ -53,7 +51,8 @@ public final class Main {
 
                 switch (readEnum(MenuOption.class)) {
                     //Todo mostra produtos no H2 e no MySQL
-                    case SHOW_PRODUCTS -> {}
+                    case SHOW_PRODUCTS -> {
+                    }
                     case CREATE_CLIENT -> clientMenu(CLIENT_CONTROLLER.create());
                     case LOGIN -> clientMenu(CLIENT_CONTROLLER.login());
                     case OUT -> {
@@ -61,11 +60,9 @@ public final class Main {
                         break loop;
                     }
                 }
-            }
-            catch (InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
 
@@ -91,15 +88,12 @@ public final class Main {
                     }
                 }
 
-            }
-            catch (ProductException e) {
+            } catch (ProductException e) {
                 log.info(e.getMessage());
                 System.exit(0);
-            }
-            catch (InputMismatchException | IndexOutOfBoundsException e) {
+            } catch (InputMismatchException | IndexOutOfBoundsException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
 

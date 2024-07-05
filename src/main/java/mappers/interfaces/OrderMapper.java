@@ -1,8 +1,8 @@
 package mappers.interfaces;
 
 
-import domain.order.Order;
 import dtos.output.OrderOutputDTO;
+import model.order.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

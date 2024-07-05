@@ -1,12 +1,14 @@
 package services;
 
-import domain.order.Product;
 import exceptions.ProductException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import model.order.Product;
 import repositories.interfaces.ProductRepository;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.List;
 
 @AllArgsConstructor
@@ -24,6 +26,11 @@ public final class ProductService {
     }
 
     public void addAllProducts() {
+
+        System.out.println();
+        EntityManagerFactory em = Persistence.createEntityManagerFactory("h2-tests");
+        System.out.println();
+
         repository.addAll();
     }
 }

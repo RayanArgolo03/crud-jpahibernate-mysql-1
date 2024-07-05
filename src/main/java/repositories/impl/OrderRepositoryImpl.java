@@ -1,6 +1,6 @@
 package repositories.impl;
 
-import domain.order.Order;
+import model.order.Order;
 import repositories.interfaces.OrderRepository;
 
 import java.util.Set;

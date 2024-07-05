@@ -1,9 +1,8 @@
 package repositories.interfaces;
 
-import domain.client.Client;
+import model.client.Client;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface ClientRepository {
 
