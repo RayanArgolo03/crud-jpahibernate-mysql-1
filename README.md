@@ -5,7 +5,6 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 ## Tecnologias utilizadas
 - SQL 
 - MySQL 
-- H2 Database em memória 
 - Lombok
 - Log4j2
 - Maven
@@ -17,6 +16,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - JPQL 🛠️
 - Criteria 🛠️
 - Junit5 🛠️
+- H2 Database para Testes Unitários
 - Mockito 🛠️
 - Docker (Container MySQL) 🛠️
 
