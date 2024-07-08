@@ -25,5 +25,6 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - DTO
 - MVC
 - Repository
+- Singleton no acesso ao banco de dados
 
 
