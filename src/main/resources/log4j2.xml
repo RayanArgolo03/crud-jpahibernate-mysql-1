@@ -6,6 +6,10 @@
         </Console>
     </Appenders>
     <Loggers>
+        <logger name="org.hibernate" level="OFF" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </logger>
+
         <Root level="info">
             <AppenderRef ref="LogToConsole"/>
         </Root>
