@@ -4,7 +4,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 
 ## Tecnologias utilizadas
 - SQL 
-- MySQL 
+- MariaDB 
 - Lombok
 - Log4j2
 - Maven
