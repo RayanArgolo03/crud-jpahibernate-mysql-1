@@ -17,7 +17,7 @@ public final class ProductController {
     ProductService service;
 
     public void addAll() {
-        log.info("Adding products in the database if not exists..");
+        log.info("Adding mock products in the database if not exists..");
         service.addAllProducts();
     }
 

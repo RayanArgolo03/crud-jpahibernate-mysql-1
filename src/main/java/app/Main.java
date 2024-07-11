@@ -19,7 +19,9 @@ import repositories.impl.ProductRepositoryImpl;
 import services.ClientService;
 import services.OrderService;
 import services.ProductService;
+import utils.JPAUtils;
 
+import javax.persistence.EntityManager;
 import java.util.InputMismatchException;
 
 import static utils.ReaderUtils.readEnum;
@@ -28,22 +30,33 @@ import static utils.ReaderUtils.readEnum;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class Main {
-    static ClientController CLIENT_CONTROLLER = new ClientController(
-            new ClientService(new ClientRepositoryImpl()), ClientMapper.INSTANCE
-    );
-    static OrderController ORDER_CONTROLLER = new OrderController(
-            new OrderService(new OrderRepositoryImpl()), OrderMapper.INSTANCE
-    );
-    static ProductController PRODUCT_CONTROLLER = new ProductController(
-            new ProductService(new ProductRepositoryImpl())
-    );
+    static EntityManager MANAGER;
+    static ClientController CLIENT_CONTROLLER;
+    static OrderController ORDER_CONTROLLER;
+    static ProductController PRODUCT_CONTROLLER;
+
+    //Print the need to initialise docker
+    static {
+        System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
+
+        MANAGER = JPAUtils.getManager("mysql-crud");
+
+        CLIENT_CONTROLLER = new ClientController(
+                new ClientService(new ClientRepositoryImpl(MANAGER)), ClientMapper.INSTANCE
+        );
+        ORDER_CONTROLLER = new OrderController(
+                new OrderService(new OrderRepositoryImpl(MANAGER)), OrderMapper.INSTANCE
+        );
+        PRODUCT_CONTROLLER = new ProductController(
+                new ProductService(new ProductRepositoryImpl(MANAGER))
+        );
+    }
 
 
     public static void main(String[] args) {
 
-        //TODO use Jpql
         PRODUCT_CONTROLLER.addAll();
-        log.info("This application use two databases: H2 and MySQL. The CRUD logic is in MySQL");
+        log.info("This application use two databases: H2 to tests and MySQL to CRUD.");
 
         loop:
         do {
@@ -80,7 +93,7 @@ public final class Main {
 
                 switch (readEnum(ClientOption.class)) {
 
-                    case SHOW_ORDERS -> ORDER_CONTROLLER.findAll(client).forEach(System.out::println);
+                    case SHOW_ORDERS -> ORDER_CONTROLLER.findAll().forEach(System.out::println);
                     case PLACE_AN_ORDER -> ORDER_CONTROLLER.create(client, PRODUCT_CONTROLLER.findAll());
                     case LOGOUT -> {
                         log.info("{} has left the system!", client);

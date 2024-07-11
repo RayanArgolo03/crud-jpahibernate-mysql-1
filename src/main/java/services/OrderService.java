@@ -26,11 +26,9 @@ public final class OrderService {
 
     OrderRepository repository;
 
-    public Set<Order> findOrdersByClient(final Client client) {
+    public Set<Order> findAllOrders() {
 
-        Objects.requireNonNull(client, "Client can´t be null!");
-
-        final Set<Order> orders = repository.findAll(client.getId());
+        final Set<Order> orders = repository.findAll();
         if (orders.isEmpty()) throw new OrderException("Orders not found");
 
         return orders;
@@ -47,7 +45,7 @@ public final class OrderService {
             Category category = readEnum(Category.class);
 
             List<Product> productsToChoose = products.stream()
-                    .filter(p -> p.getCategory() == category)
+                    .filter(p -> p.getCategories().contains(category))
                     .toList();
 
             Product product = readElement(productsToChoose);

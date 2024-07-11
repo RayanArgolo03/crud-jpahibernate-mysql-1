@@ -1,9 +1,10 @@
 package model.client;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -21,14 +22,12 @@ import java.util.UUID;
 @Table(name = "clients")
 public final class Client {
 
-    @NonFinal
-    @Setter
-    @Column(name = "id")
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "uuid4")
+    @Column(name = "id", columnDefinition = "binary(16)")
     UUID id;
 
-    @Column(name = "user_name", columnDefinition = "VARCHAR(250) UNIQUE")
+    @Column(name = "user_name", columnDefinition = "varchar(250) unique")
     String username;
 
     @Column(name = "client_name")
@@ -37,11 +36,10 @@ public final class Client {
     @Column(name = "password")
     String password;
 
-    @Column(name = "cpf", columnDefinition = "VARCHAR(11) UNIQUE")
+    @Column(name = "cpf", columnDefinition = "varchar(11) unique")
     String cpf;
 
-    @CreationTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "timestamp default NOW()")
     LocalDateTime createdAt;
 }
 

@@ -11,7 +11,6 @@ import java.util.Objects;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JPAUtils {
-
     static EntityManager MANAGER;
 
     public static EntityManager getManager(final String unitPersistence) {

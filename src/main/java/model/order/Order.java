@@ -1,10 +1,8 @@
 package model.order;
 
 import lombok.*;
-import model.client.Client;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import org.hibernate.annotations.CreationTimestamp;
+import model.client.Client;
 import org.hibernate.annotations.DynamicInsert;
 import utils.FormatterUtils;
 
@@ -26,20 +24,23 @@ import java.util.UUID;
 @Table(name = "orders")
 public final class Order {
 
-    @NonFinal
     @Id
-    @GeneratedValue
-    @Column(name = "id")
+    @GeneratedValue(generator = "uuid4")
+    @Column(name = "id", columnDefinition = "binary(16)")
     UUID id;
 
-    //Todo relacione
+    @ManyToOne
+    @JoinColumn(name = "id_client")
     Client client;
-    Set<OrderItem> orderItems;
-    //Deffensive programing
 
-    @CreationTimestamp
-    @Column(name = "order_date")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id_order")
+    Set<OrderItem> orderItems;
+
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT NOW()")
     LocalDateTime orderDate;
+
+    //Deffensive programing
 
     public Set<OrderItem> getOrderItems() {
         return Collections.unmodifiableSet(orderItems);

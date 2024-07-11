@@ -3,11 +3,10 @@ package repositories.interfaces;
 import model.order.Order;
 
 import java.util.Set;
-import java.util.UUID;
 
 public interface OrderRepository {
 
-    Set<Order> findAll(UUID id);
+    Set<Order> findAll();
 
     void save(Order order);
 

@@ -24,11 +24,12 @@ import java.util.UUID;
 public final class OrderItem {
 
     @Id
-    @GeneratedValue
-    @Column(name = "id")
+    @GeneratedValue(generator = "uuid4")
+    @Column(name = "id", columnDefinition = "binary(16)")
     UUID id;
 
-    //Todo relacione
+    @ManyToOne()
+    @JoinColumn(name = "id_product")
     final Product product;
 
     @Min(value = 1, message = "Quantity min is 1!")

@@ -24,11 +24,11 @@ public final class OrderController {
     OrderService service;
     OrderMapper mapper;
 
-    public Set<OrderOutputDTO> findAll(final Client client) {
+    public Set<OrderOutputDTO> findAll() {
 
-        log.info("Find orders by client {}, ", client.getName());
+        log.info("Find orders..");
 
-        return service.findOrdersByClient(client).stream()
+        return service.findAllOrders().stream()
                 .map(mapper::orderToOutput)
                 .collect(Collectors.toSet());
     }
