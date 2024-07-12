@@ -1,13 +1,13 @@
 services:
-  mysql:
-    image: mysql
-    container_name: mysql
+  mariadb:
+    image: mariadb
+    container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
     ports:
       - '3306:3306'
     volumes:
-      - 'mysql_data:/var/lib/mysql'
+      - 'mariadb_data:/var/lib/mariadb'
 
 volumes:
-  mysql_data:
+  mariadb_data:
