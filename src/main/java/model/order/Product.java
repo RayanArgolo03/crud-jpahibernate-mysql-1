@@ -45,8 +45,8 @@ public final class Product {
     @ElementCollection
     @CollectionTable(
             name = "categories",
-            joinColumns = @JoinColumn(name = "id_product", columnDefinition = "binary(16)"),
-            foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id_product) REFERENCES products(id) ON DELETE CASCADE")
+            joinColumns = @JoinColumn(name = "id", columnDefinition = "binary(16)"),
+            foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id) REFERENCES products(id) ON DELETE CASCADE")
     )
     @Enumerated(value = EnumType.STRING)
     @Column(name = "category")
