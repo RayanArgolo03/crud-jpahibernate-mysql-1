@@ -7,7 +7,7 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - 'mariadb_data:/var/lib/mariadb'
+      - 'mariadb_data:/var/lib/mysql'
 
 volumes:
   mariadb_data:

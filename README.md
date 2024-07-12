@@ -12,7 +12,6 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Mapstruct
 - JPA 
 - Hibernate️
-- Hibernate Validator
 - JPQL 🛠️
 - Criteria 🛠️
 - Junit5 🛠️
