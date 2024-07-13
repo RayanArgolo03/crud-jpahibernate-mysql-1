@@ -1,15 +1,15 @@
 package model.order;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import model.client.Client;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import utils.FormatterUtils;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -20,14 +20,14 @@ import java.util.UUID;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 
-@DynamicInsert
 @Entity
+@DynamicInsert
 @Table(name = "orders")
 public final class Order {
 
     @Id
     @GeneratedValue(generator = "uuid4")
-    @Column(name = "id", columnDefinition = "binary(16)")
+    @Column(name = "id", columnDefinition = "binary(36)")
     UUID id;
 
     @ManyToOne
@@ -38,17 +38,17 @@ public final class Order {
     @JoinColumn(name = "id_order")
     Set<OrderItem> orderItems;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT NOW()")
-    LocalDateTime orderDate;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    LocalDateTime createdAt;
 
     //Deffensive programing
-
     public Set<OrderItem> getOrderItems() {
         return Collections.unmodifiableSet(orderItems);
     }
 
     public String getFormattedDate() {
-        return FormatterUtils.formatDate(orderDate);
+        return FormatterUtils.formatDate(createdAt);
     }
 
     public String getTotal() {

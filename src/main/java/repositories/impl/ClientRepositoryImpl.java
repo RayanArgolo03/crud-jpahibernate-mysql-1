@@ -1,12 +1,12 @@
 package repositories.impl;
 
+import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import model.client.Client;
 import repositories.interfaces.ClientRepository;
 
-import javax.persistence.EntityManager;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -14,10 +14,10 @@ import java.util.Optional;
 public final class ClientRepositoryImpl implements ClientRepository {
 
     EntityManager manager;
+
     @Override
     public void save(final Client client) {
         //Implementar com banco de dados
-        manager.persist("any");
     }
 
     @Override

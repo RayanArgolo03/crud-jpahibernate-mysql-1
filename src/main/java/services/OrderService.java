@@ -75,7 +75,7 @@ public final class OrderService {
 
         return Order.builder()
                 .client(client)
-                .orderDate(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .orderItems(orderItems)
                 .build();
     }

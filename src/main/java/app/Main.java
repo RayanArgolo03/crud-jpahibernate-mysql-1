@@ -5,7 +5,10 @@ import controllers.OrderController;
 import controllers.ProductController;
 import enums.ClientOption;
 import enums.MenuOption;
+import exceptions.DatabaseException;
 import exceptions.ProductException;
+import jakarta.persistence.EntityManager;
+import jpautil.JPAUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,9 +22,7 @@ import repositories.impl.ProductRepositoryImpl;
 import services.ClientService;
 import services.OrderService;
 import services.ProductService;
-import utils.JPAUtils;
 
-import javax.persistence.EntityManager;
 import java.util.InputMismatchException;
 
 import static utils.ReaderUtils.readEnum;
@@ -39,14 +40,17 @@ public final class Main {
     static {
         System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
 
-        MANAGER = JPAUtils.getManager("mysql-crud");
+        MANAGER = JPAUtil.getInstance("mariadb");
+
 
         CLIENT_CONTROLLER = new ClientController(
                 new ClientService(new ClientRepositoryImpl(MANAGER)), ClientMapper.INSTANCE
         );
+
         ORDER_CONTROLLER = new OrderController(
                 new OrderService(new OrderRepositoryImpl(MANAGER)), OrderMapper.INSTANCE
         );
+
         PRODUCT_CONTROLLER = new ProductController(
                 new ProductService(new ProductRepositoryImpl(MANAGER))
         );
@@ -55,17 +59,22 @@ public final class Main {
 
     public static void main(String[] args) {
 
-        PRODUCT_CONTROLLER.addAll();
         log.info("This application use two databases: H2 to tests and MySQL to CRUD.");
+
+        try {
+            if (PRODUCT_CONTROLLER.findAll().isEmpty()) PRODUCT_CONTROLLER.addAll();
+        }
+        catch (DatabaseException e) {
+            log.error("Severe error: {}", e.getMessage());
+            System.exit(0);
+        }
 
         loop:
         do {
             try {
 
                 switch (readEnum(MenuOption.class)) {
-                    //Todo mostra produtos no H2 e no MySQL
-                    case SHOW_PRODUCTS -> {
-                    }
+                    case SHOW_PRODUCTS -> {}
                     case CREATE_CLIENT -> clientMenu(CLIENT_CONTROLLER.create());
                     case LOGIN -> clientMenu(CLIENT_CONTROLLER.login());
                     case OUT -> {
@@ -73,9 +82,11 @@ public final class Main {
                         break loop;
                     }
                 }
-            } catch (InputMismatchException e) {
+            }
+            catch (InputMismatchException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 log.error(e.getMessage());
             }
 
@@ -101,12 +112,15 @@ public final class Main {
                     }
                 }
 
-            } catch (ProductException e) {
+            }
+            catch (ProductException e) {
                 log.info(e.getMessage());
                 System.exit(0);
-            } catch (InputMismatchException | IndexOutOfBoundsException e) {
+            }
+            catch (InputMismatchException | IndexOutOfBoundsException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 log.error(e.getMessage());
             }
 

@@ -30,6 +30,7 @@ public final class ClientController {
         service.validatePassword(password);
 
         log.info("Create client account: Client informations.. \n");
+
         String name = readString("name (without special characters and with more than 3 characters)");
         name = service.validateAndFormatName(name);
 

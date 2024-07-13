@@ -1,13 +1,11 @@
 package model.order;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.DynamicInsert;
 import utils.FormatterUtils;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -18,23 +16,22 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 
-@DynamicInsert
+
 @Entity
+@DynamicInsert
 @Table(name = "order_items")
 public final class OrderItem {
 
     @Id
     @GeneratedValue(generator = "uuid4")
-    @Column(name = "id", columnDefinition = "binary(16)")
+    @Column(name = "id", columnDefinition = "binary(36)")
     UUID id;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "id_product")
     final Product product;
 
-    @Min(value = 1, message = "Quantity min is 1!")
-    @Max(value = 10, message = "Quantity max is 10!")
-    @Column(name = "quantity")
+    @Column(name = "quantity", columnDefinition = "int default 10", nullable = false)
     int quantity;
 
     @Override
