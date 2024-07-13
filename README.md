@@ -2,12 +2,7 @@
 
 Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de estudo e aprendizado de novas tecnologias.
 
-
-
 # Tecnologias utilizadas
-
-<hr/> 
-
 ## Linguagens e convenções
 - Java
 - SQL 
@@ -30,7 +25,6 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 # Log
 - Sl4j
 - Log4j2
----
 # Design Patterns utilizados
 - Builder
 - DTO
