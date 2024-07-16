@@ -7,7 +7,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Java
 - SQL 
 - JPA
-- JPQL 🛠️
+- JPQL 
 - Criteria 🛠
 ## Banco de Dados
 - MariaDB 
@@ -21,7 +21,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Mockito 🛠
 # Build
 - Maven
-- Docker (Container MariaDb) 🛠
+- Docker (Container MariaDb)
 # Log
 - Sl4j
 - Log4j2
@@ -31,5 +31,5 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - MVC
 - Repository
 - Singleton no acesso ao banco de dados
-
+- Utility Classes
 
