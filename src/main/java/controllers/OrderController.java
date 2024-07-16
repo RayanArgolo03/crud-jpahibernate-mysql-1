@@ -1,17 +1,16 @@
 package controllers;
 
-import model.client.Client;
-import model.order.Order;
-import model.order.Product;
 import dtos.output.OrderOutputDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
 import mappers.interfaces.OrderMapper;
+import model.client.Client;
+import model.order.Order;
+import model.order.Product;
 import services.OrderService;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +32,7 @@ public final class OrderController {
                 .collect(Collectors.toSet());
     }
 
-    public void create(final Client client, final List<Product> products) {
+    public void create(final Client client, final Set<Product> products) {
         final Order order = service.placeOrder(client, products);
         //Else, order is cancelled
         if (Objects.nonNull(order)) {

@@ -26,8 +26,7 @@ import java.util.UUID;
 public final class Product {
 
     @Id
-    @GeneratedValue(generator = "uuid4")
-    @Column(name = "id", columnDefinition = "binary(36)")
+    @GeneratedValue
     UUID id;
 
     @Column(name = "name", unique = true, nullable = false)
@@ -38,7 +37,7 @@ public final class Product {
 
     @ElementCollection
     @CollectionTable(name = "categories",
-            joinColumns = @JoinColumn(name = "id", columnDefinition = "binary(36)"),
+            joinColumns = @JoinColumn(name = "id"),
             foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id) REFERENCES products(id) ON DELETE CASCADE"))
     @Enumerated(value = EnumType.STRING)
     @Column(name = "name", nullable = false)
@@ -55,7 +54,7 @@ public final class Product {
 
     @Override
     public String toString() {
-        return String.format("%s with unit value %s of %s category", name,
+        return String.format("%s with unit price %s of %s category", name,
                 FormatterUtils.formatCurrency(unitPrice),
                 Objects.requireNonNull(getFirstCategoryFormattedName(), "Category name can´t be null!")
         );

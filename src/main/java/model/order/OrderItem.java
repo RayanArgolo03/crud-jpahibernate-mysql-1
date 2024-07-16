@@ -23,8 +23,7 @@ import java.util.UUID;
 public final class OrderItem {
 
     @Id
-    @GeneratedValue(generator = "uuid4")
-    @Column(name = "id", columnDefinition = "binary(36)")
+    @GeneratedValue
     UUID id;
 
     @ManyToOne

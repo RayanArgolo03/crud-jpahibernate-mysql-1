@@ -14,6 +14,7 @@ public final class ReaderUtils {
 
     public static <E extends Enum<E>> E readEnum(Class<E> enumClass) {
 
+        System.out.println();
         final E[] enums = enumClass.getEnumConstants();
         for (E e : enums) System.out.printf("%d - %s\n", (e.ordinal() + 1), e);
 

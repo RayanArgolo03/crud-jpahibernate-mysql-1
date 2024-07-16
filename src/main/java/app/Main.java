@@ -40,8 +40,7 @@ public final class Main {
     static {
         System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
 
-        MANAGER = JPAUtil.getInstance("mariadb");
-
+        MANAGER = JPAUtil.getInstance("h2");
 
         CLIENT_CONTROLLER = new ClientController(
                 new ClientService(new ClientRepositoryImpl(MANAGER)), ClientMapper.INSTANCE
@@ -59,12 +58,12 @@ public final class Main {
 
     public static void main(String[] args) {
 
+
         log.info("This application use two databases: H2 to tests and MySQL to CRUD.");
 
         try {
             if (PRODUCT_CONTROLLER.findAll().isEmpty()) PRODUCT_CONTROLLER.addAll();
-        }
-        catch (DatabaseException e) {
+        } catch (DatabaseException e) {
             log.error("Severe error: {}", e.getMessage());
             System.exit(0);
         }
@@ -74,7 +73,7 @@ public final class Main {
             try {
 
                 switch (readEnum(MenuOption.class)) {
-                    case SHOW_PRODUCTS -> {}
+                    case SHOW_PRODUCTS -> PRODUCT_CONTROLLER.findAll().forEach(System.out::println);
                     case CREATE_CLIENT -> clientMenu(CLIENT_CONTROLLER.create());
                     case LOGIN -> clientMenu(CLIENT_CONTROLLER.login());
                     case OUT -> {
@@ -82,11 +81,10 @@ public final class Main {
                         break loop;
                     }
                 }
-            }
-            catch (InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
-            }
-            catch (Exception e) {
+                System.exit(0);
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
 
@@ -112,15 +110,13 @@ public final class Main {
                     }
                 }
 
-            }
-            catch (ProductException e) {
+            } catch (ProductException e) {
                 log.info(e.getMessage());
                 System.exit(0);
-            }
-            catch (InputMismatchException | IndexOutOfBoundsException e) {
+            } catch (InputMismatchException | IndexOutOfBoundsException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
-            }
-            catch (Exception e) {
+                System.exit(0);
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
 

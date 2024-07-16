@@ -7,7 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import model.order.Product;
 import services.ProductService;
 
-import java.util.List;
+import java.util.LinkedHashSet;
 
 @Log4j2
 @AllArgsConstructor
@@ -21,9 +21,13 @@ public final class ProductController {
         service.addProducts();
     }
 
-    public List<Product> findAll() {
+    public LinkedHashSet<Product> findAll() {
+
         log.info("Finding products in database.. ");
-//        return service.findAllProducts();
-        return List.of();
+
+        final LinkedHashSet<Product> products = service.findProducts();
+        if (!products.isEmpty()) System.out.println("\n                -- PRODUCTS -- ");
+
+        return products;
     }
 }

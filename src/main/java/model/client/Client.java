@@ -22,8 +22,7 @@ import java.util.UUID;
 public final class Client {
 
     @Id
-    @GeneratedValue(generator = "uuid4")
-    @Column(name = "id", columnDefinition = "binary(36)")
+    @GeneratedValue
     UUID id;
 
     @Column(name = "user_name", unique = true, nullable = false)

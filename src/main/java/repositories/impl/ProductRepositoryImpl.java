@@ -8,8 +8,9 @@ import lombok.experimental.FieldDefaults;
 import model.order.Product;
 import repositories.interfaces.ProductRepository;
 
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -19,11 +20,14 @@ public final class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void addAll(final Set<Product> mockProducts) {
-        TransactionManagerUtil.execute(em, (aux) -> mockProducts.forEach(em::persist));
+        TransactionManagerUtil.executePersistence(em, (aux) -> mockProducts.forEach(em::persist));
     }
 
     @Override
-    public List<Product> findAll() {
-        return null;
+    public LinkedHashSet<Product> findAll() {
+        return em.createQuery("SELECT p FROM Product p", Product.class)
+                        .getResultStream()
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
     }
+
 }

@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class TransactionManagerUtil {
 
-    public static void execute(final EntityManager em, final Consumer<EntityManager> action) {
+    public static void executePersistence(final EntityManager em, final Consumer<EntityManager> action) {
 
         EntityTransaction transaction = null;
         try {
