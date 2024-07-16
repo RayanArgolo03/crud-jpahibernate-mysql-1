@@ -1,4 +1,4 @@
-package jpautil;
+package utils;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public final class JPAUtil {
+public final class JPAUtils {
     static EntityManager INSTANCE;
     public static EntityManager getInstance(final String unitPersistence) {
 

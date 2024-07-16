@@ -1,7 +1,7 @@
 package repositories.impl;
 
 import jakarta.persistence.EntityManager;
-import jpautil.TransactionManagerUtil;
+import utils.TransactionManagerUtils;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +20,7 @@ public final class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void addAll(final Set<Product> mockProducts) {
-        TransactionManagerUtil.executePersistence(em, (aux) -> mockProducts.forEach(em::persist));
+        TransactionManagerUtils.executePersistence(em, (aux) -> mockProducts.forEach(em::persist));
     }
 
     @Override

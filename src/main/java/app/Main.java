@@ -8,7 +8,7 @@ import enums.MenuOption;
 import exceptions.DatabaseException;
 import exceptions.ProductException;
 import jakarta.persistence.EntityManager;
-import jpautil.JPAUtil;
+import utils.JPAUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -40,7 +40,7 @@ public final class Main {
     static {
         System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
 
-        MANAGER = JPAUtil.getInstance("h2");
+        MANAGER = JPAUtils.getInstance("h2");
 
         CLIENT_CONTROLLER = new ClientController(
                 new ClientService(new ClientRepositoryImpl(MANAGER)), ClientMapper.INSTANCE

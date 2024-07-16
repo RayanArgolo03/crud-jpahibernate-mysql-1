@@ -1,4 +1,4 @@
-package jpautil;
+package utils;
 
 import exceptions.DatabaseException;
 import jakarta.persistence.EntityManager;
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public final class TransactionManagerUtil {
+public final class TransactionManagerUtils {
 
     public static void executePersistence(final EntityManager em, final Consumer<EntityManager> action) {
 
