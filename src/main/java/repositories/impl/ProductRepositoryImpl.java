@@ -19,15 +19,15 @@ public final class ProductRepositoryImpl implements ProductRepository {
     EntityManager em;
 
     @Override
-    public void addAll(final Set<Product> mockProducts) {
-        TransactionManagerUtils.executePersistence(em, (aux) -> mockProducts.forEach(em::persist));
+    public LinkedHashSet<Product> findAll() {
+        return em.createQuery("SELECT p FROM Product p ORDER BY p.name DESC", Product.class)
+                .getResultStream()
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
-    public LinkedHashSet<Product> findAll() {
-        return em.createQuery("SELECT p FROM Product p", Product.class)
-                        .getResultStream()
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+    public void addAll(final Set<Product> mockProducts) {
+        TransactionManagerUtils.executePersistence(em, (aux) -> mockProducts.forEach(aux::persist));
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GetMockProductsUtils {
     public static Set<Product> getMockProducts() {
-        return  Set.of(
+        return Set.of(
                 new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null),
                 new Product(null, "Strawberry", new BigDecimal("2.00"), Set.of(Category.FOODS), null),
                 new Product(null, "Noodles", new BigDecimal("10.50"), Set.of(Category.FOODS), null),

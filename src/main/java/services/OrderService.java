@@ -1,20 +1,20 @@
 package services;
 
-import model.client.Client;
-import model.order.Order;
-import model.order.OrderItem;
-import model.order.Product;
 import enums.Category;
 import enums.ContinueOption;
+import exceptions.DatabaseException;
 import exceptions.OrderException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import model.client.Client;
+import model.order.Order;
+import model.order.OrderItem;
+import model.order.Product;
 import repositories.interfaces.OrderRepository;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -26,15 +26,15 @@ public final class OrderService {
 
     OrderRepository repository;
 
-    public Set<Order> findAllOrders() {
+    public Set<Order> findAllOrders(final Client client) {
 
-        final Set<Order> orders = repository.findAll();
+        final Set<Order> orders = repository.findAll(client);
         if (orders.isEmpty()) throw new OrderException("Orders not found");
 
         return orders;
     }
 
-    public Order placeOrder(final Client client, final Set<Product> products) {
+    public Order placeOrder(final Client client, final LinkedHashSet<Product> products) {
 
         //Keeps the purchase order with LinkedHashSet
         final Set<OrderItem> orderItems = new LinkedHashSet<>();
@@ -43,31 +43,25 @@ public final class OrderService {
         do {
             System.out.println("Enter with category option: ");
             Category category = readEnum(Category.class);
+            System.out.println();
 
-            List<Product> productsToChoose = products.stream()
+            Product product = readProduct(products.stream()
                     .filter(p -> p.getCategories().contains(category))
-                    .toList();
+                    .toList());
+            System.out.println();
 
-            Product product = readElement(productsToChoose);
-            int quantity = readInt("product quantity (only positive numbers less than 11");
-            validateQuantity(quantity);
+            int quantity = readInt("product quantity (only positive numbers less than 100)");
+            System.out.println();
 
             OrderItem oi = createOrderItem(product, quantity);
+            if (!orderItems.add(oi)) incrementQuantity(oi, quantity);
 
-            boolean sucess = orderItems.add(oi);
-            if (!sucess) {
-                System.out.printf("Product %s was purchased in this order with %d units, increasing quantity..",
-                        oi.getProduct(),
-                        oi.getQuantity());
-
-                increasingQuantity(oi, quantity);
-            }
-
-            System.out.println("Do continue buy? ");
+            System.out.println("Do continue buy?");
             option = readEnum(ContinueOption.class);
+            System.out.println();
 
             if (option == ContinueOption.CANCELLING) {
-                System.out.println("Order cancelled!");
+                System.out.println("Order cancelled! Returning to menu..");
                 return null;
             }
 
@@ -80,20 +74,21 @@ public final class OrderService {
                 .build();
     }
 
-    public void validateQuantity(int quantity) {
-        if (quantity < 1) throw new OrderException("Quantity is negative number!");
-        if (quantity > 10) throw new OrderException("Quantity is more than 10!");
-    }
+    public void incrementQuantity(final OrderItem oi, final int quantity) {
+        System.out.printf("**  Product %s was purchased in this order with %d units, increasing quantity.. \n",
+                oi.getProduct(),
+                oi.getQuantity());
 
-    public void increasingQuantity(final OrderItem oi, final int quantity) {
-        System.out.printf("Product %s was purchased in this order, increasing quantity", oi.getProduct());
-        oi.incrementQuantity(quantity);
+        oi.increaseQuantity(quantity);
     }
-
 
     public OrderItem createOrderItem(final Product product, final int quantity) {
 
         Objects.requireNonNull(product, "Product can´t be null!");
+
+        if (quantity < 1) throw new OrderException("Quantity is negative number!");
+
+        if (quantity > 99) throw new OrderException("Quantity is more than 100!");
 
         return OrderItem.builder()
                 .product(product)
@@ -103,7 +98,11 @@ public final class OrderService {
 
     public void save(Order order) {
         Objects.requireNonNull(order, "Order can´t be null");
-        repository.save(order);
+        try {
+            repository.save(order);
+        } catch (DatabaseException e) {
+            throw new OrderException(String.format("Error in save new order: %s", e.getMessage()), e);
+        }
     }
 
 }

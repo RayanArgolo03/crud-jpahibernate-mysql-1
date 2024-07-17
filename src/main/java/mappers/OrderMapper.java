@@ -1,4 +1,4 @@
-package mappers.interfaces;
+package mappers;
 
 
 import dtos.output.OrderOutputDTO;

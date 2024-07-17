@@ -6,8 +6,10 @@ import java.util.Optional;
 
 public interface ClientRepository {
 
-    void save(Client client);
+    Optional<String> findUsername(String username);
 
-    Optional<Client> findUserClient(String username, String password);
+    Optional<Client> findClient(String username, String password);
+
+    void save(Client client);
 
 }

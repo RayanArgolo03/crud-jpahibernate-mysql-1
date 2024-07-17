@@ -21,13 +21,9 @@ public final class ProductController {
         service.addProducts();
     }
 
+    //Using linked hash set to preserve initial order
     public LinkedHashSet<Product> findAll() {
-
-        log.info("Finding products in database.. ");
-
-        final LinkedHashSet<Product> products = service.findProducts();
-        if (!products.isEmpty()) System.out.println("\n                -- PRODUCTS -- ");
-
-        return products;
+        log.info("Finding products in database..\n");
+        return service.findProducts();
     }
 }

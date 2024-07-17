@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 
-@AllArgsConstructor
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(force = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter

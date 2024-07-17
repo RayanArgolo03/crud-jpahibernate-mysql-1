@@ -14,8 +14,6 @@ public final class FormatterUtils {
     private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public static String formatCurrency(final BigDecimal value) {return CURRENCY_FORMATTER.format(value);}
-
-    public static String formatDate(final LocalDateTime dateTime){
-        return DATE_TIME_FORMATTER.format(dateTime);
-    }
+    public static String formatDate(final LocalDateTime dateTime){return DATE_TIME_FORMATTER.format(dateTime);}
+    public static String formatName(final String name){return name.substring(0, 1).toUpperCase().concat(name.substring(1).toLowerCase());}
 }

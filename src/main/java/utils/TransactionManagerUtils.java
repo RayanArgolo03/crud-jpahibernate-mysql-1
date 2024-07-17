@@ -25,7 +25,7 @@ public final class TransactionManagerUtils {
         }
         catch (Exception e) {
             if (Objects.nonNull(transaction)) transaction.rollback();
-            throw new DatabaseException(e.getMessage());
+            throw new DatabaseException(e.getCause().getMessage(), e);
         }
         finally {
             em.clear();

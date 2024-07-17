@@ -3,6 +3,7 @@ package utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import model.order.Product;
 
 import java.util.List;
 import java.util.Scanner;
@@ -14,20 +15,19 @@ public final class ReaderUtils {
 
     public static <E extends Enum<E>> E readEnum(Class<E> enumClass) {
 
-        System.out.println();
         final E[] enums = enumClass.getEnumConstants();
         for (E e : enums) System.out.printf("%d - %s\n", (e.ordinal() + 1), e);
 
         return enums[readInt("your choice") - 1];
     }
 
-    public static <T> T readElement(final List<T> elements) {
+    public static Product readProduct(final List<Product> products) {
 
-        elements.forEach(p -> {
-            System.out.printf("%d - %s\n", elements.indexOf(p) + 1, p);
+        products.forEach(p -> {
+            System.out.printf("%d - %s\n", products.indexOf(p) + 1, p);
         });
 
-        return elements.get(readInt("Product to buy: ") - 1);
+        return products.get(readInt("product to buy") - 1);
     }
 
     public static int readInt(final String title) {

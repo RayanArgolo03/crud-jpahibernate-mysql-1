@@ -1,12 +1,13 @@
 package repositories.interfaces;
 
+import model.client.Client;
 import model.order.Order;
 
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 public interface OrderRepository {
 
-    Set<Order> findAll();
+    LinkedHashSet<Order> findAll(final Client client);
 
     void save(Order order);
 

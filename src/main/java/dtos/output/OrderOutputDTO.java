@@ -18,11 +18,11 @@ public final class OrderOutputDTO {
     @Override
     public String toString() {
 
-        final StringBuilder sb = new StringBuilder("  ------ " + dateFormatted + "  ------ ");
+        final StringBuilder sb = new StringBuilder("\n          ------ " + dateFormatted + "  ------ ");
         sb.append("\n");
 
         items.forEach(i -> sb.append(i).append("\n"));
-        sb.append("  ------ Total ").append(total).append("  ------ ");
+        sb.append("              Order Total ").append(total).append("\n");
 
         return sb.toString();
     }

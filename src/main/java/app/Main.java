@@ -5,16 +5,14 @@ import controllers.OrderController;
 import controllers.ProductController;
 import enums.ClientOption;
 import enums.MenuOption;
-import exceptions.DatabaseException;
 import exceptions.ProductException;
 import jakarta.persistence.EntityManager;
-import utils.JPAUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
-import mappers.interfaces.ClientMapper;
-import mappers.interfaces.OrderMapper;
+import mappers.ClientMapper;
+import mappers.OrderMapper;
 import model.client.Client;
 import repositories.impl.ClientRepositoryImpl;
 import repositories.impl.OrderRepositoryImpl;
@@ -22,6 +20,7 @@ import repositories.impl.ProductRepositoryImpl;
 import services.ClientService;
 import services.OrderService;
 import services.ProductService;
+import utils.JPAUtils;
 
 import java.util.InputMismatchException;
 
@@ -40,7 +39,7 @@ public final class Main {
     static {
         System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
 
-        MANAGER = JPAUtils.getInstance("h2");
+        MANAGER = JPAUtils.getInstance("mariadb");
 
         CLIENT_CONTROLLER = new ClientController(
                 new ClientService(new ClientRepositoryImpl(MANAGER)), ClientMapper.INSTANCE
@@ -59,11 +58,16 @@ public final class Main {
     public static void main(String[] args) {
 
 
-        log.info("This application use two databases: H2 to tests and MySQL to CRUD.");
+        log.info("This application use two databases: H2 to tests and MariaDB to CRUD. Products added by GetMockProductsUtils");
 
         try {
-            if (PRODUCT_CONTROLLER.findAll().isEmpty()) PRODUCT_CONTROLLER.addAll();
-        } catch (DatabaseException e) {
+            PRODUCT_CONTROLLER.findAll();
+        }
+        //If there are no products in the database
+        catch (ProductException e) {
+            log.info(e.getMessage());
+            PRODUCT_CONTROLLER.addAll();
+        } catch (Exception e) {
             log.error("Severe error: {}", e.getMessage());
             System.exit(0);
         }
@@ -71,11 +75,16 @@ public final class Main {
         loop:
         do {
             try {
-
                 switch (readEnum(MenuOption.class)) {
-                    case SHOW_PRODUCTS -> PRODUCT_CONTROLLER.findAll().forEach(System.out::println);
+                    case SHOW_AVAILABLE_PRODUCTS -> {
+                        PRODUCT_CONTROLLER.findAll().forEach(System.out::println);
+                        System.out.println();
+                    }
+
                     case CREATE_CLIENT -> clientMenu(CLIENT_CONTROLLER.create());
+
                     case LOGIN -> clientMenu(CLIENT_CONTROLLER.login());
+
                     case OUT -> {
                         log.info("Thanks for the use :)");
                         break loop;
@@ -83,6 +92,9 @@ public final class Main {
                 }
             } catch (InputMismatchException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
+                System.exit(0);
+            } catch (ProductException e) {
+                log.error("{}, restart the program! ", e.getMessage());
                 System.exit(0);
             } catch (Exception e) {
                 log.error(e.getMessage());
@@ -95,23 +107,30 @@ public final class Main {
 
     public static void clientMenu(final Client client) {
 
-        log.info("\nWelcome Sr/a {}", client.getName());
+        System.out.printf("         --- Welcome Sr/a %s --- \n", client.getName());
 
         do {
             try {
 
                 switch (readEnum(ClientOption.class)) {
 
-                    case SHOW_ORDERS -> ORDER_CONTROLLER.findAll().forEach(System.out::println);
+                    case SHOW_ORDERS -> ORDER_CONTROLLER.findAll(client).forEach(System.out::println);
+
                     case PLACE_AN_ORDER -> ORDER_CONTROLLER.create(client, PRODUCT_CONTROLLER.findAll());
+
+                    case DELETE_ORDER_PLACED -> {
+                        //Todo continue
+                        //ORDER_CONTROLLER.delete();
+                    }
+
                     case LOGOUT -> {
-                        log.info("{} has left the system!", client);
+                        log.info("{} has left the system!", client.getUsername());
                         return;
                     }
                 }
 
             } catch (ProductException e) {
-                log.info(e.getMessage());
+                log.error("{}, restart the program! ", e.getMessage());
                 System.exit(0);
             } catch (InputMismatchException | IndexOutOfBoundsException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");

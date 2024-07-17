@@ -16,7 +16,6 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 
-
 @Entity
 @DynamicInsert
 @Table(name = "order_items")
@@ -42,7 +41,8 @@ public final class OrderItem {
         return FormatterUtils.formatCurrency(product.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
     }
 
-    public void incrementQuantity(int quantity) {
+    public void increaseQuantity(int quantity) {
         this.quantity += quantity;
     }
+
 }
