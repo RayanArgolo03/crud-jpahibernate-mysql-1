@@ -19,6 +19,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 # Testes
 - Junit5 🛠️
 - Mockito 🛠
+- SystemLambda (Testes inputs System.in)
 # Build
 - Maven
 - Docker (Container MariaDb)
