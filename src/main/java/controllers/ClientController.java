@@ -21,7 +21,7 @@ public final class ClientController {
 
     public Client create() {
 
-        log.info("Create client account: New user informations.. \n");
+        log.info("Create client account: User informations.. \n");
 
 //        final String username = readString("username");
         final String username = "abcd";
@@ -45,8 +45,6 @@ public final class ClientController {
         final Client client = mapper.inputToClient(inputDTO);
 
         service.saveClient(client);
-        System.out.println();
-
         log.info("{} online!", mapper.clientToOutput(client));
 
         return client;

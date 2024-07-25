@@ -6,7 +6,7 @@ import controllers.ProductController;
 import enums.ClientOption;
 import enums.MenuOption;
 import exceptions.ProductException;
-import jakarta.persistence.EntityManager;
+import jpa.JpaTransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,15 +14,16 @@ import lombok.extern.log4j.Log4j2;
 import mappers.ClientMapper;
 import mappers.OrderMapper;
 import model.client.Client;
+import model.order.Order;
 import repositories.impl.ClientRepositoryImpl;
 import repositories.impl.OrderRepositoryImpl;
 import repositories.impl.ProductRepositoryImpl;
 import services.ClientService;
 import services.OrderService;
 import services.ProductService;
-import utils.JPAUtils;
 
 import java.util.InputMismatchException;
+import java.util.Set;
 
 import static utils.ReaderUtils.readEnum;
 
@@ -30,27 +31,27 @@ import static utils.ReaderUtils.readEnum;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class Main {
-    static EntityManager MANAGER;
+    static JpaTransactionManager TRANSACTION_MANAGER;
     static ClientController CLIENT_CONTROLLER;
     static OrderController ORDER_CONTROLLER;
     static ProductController PRODUCT_CONTROLLER;
 
-    //Print the need to initialise docker
     static {
+
         System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
 
-        MANAGER = JPAUtils.getInstance("mariadb");
+        TRANSACTION_MANAGER = new JpaTransactionManager("mariadb");
 
         CLIENT_CONTROLLER = new ClientController(
-                new ClientService(new ClientRepositoryImpl(MANAGER)), ClientMapper.INSTANCE
+                new ClientService(new ClientRepositoryImpl(TRANSACTION_MANAGER)), ClientMapper.INSTANCE
         );
 
         ORDER_CONTROLLER = new OrderController(
-                new OrderService(new OrderRepositoryImpl(MANAGER)), OrderMapper.INSTANCE
+                new OrderService(new OrderRepositoryImpl(TRANSACTION_MANAGER)), OrderMapper.INSTANCE
         );
 
         PRODUCT_CONTROLLER = new ProductController(
-                new ProductService(new ProductRepositoryImpl(MANAGER))
+                new ProductService(new ProductRepositoryImpl(TRANSACTION_MANAGER))
         );
     }
 
@@ -58,16 +59,19 @@ public final class Main {
     public static void main(String[] args) {
 
 
-        log.info("This application use two databases: H2 to tests and MariaDB to CRUD. Products added by GetMockProductsUtils");
+        log.info("This application use two databases: H2 to tests and MariaDB to CRUD. Products instanced GetMockProductsUtils class");
 
         try {
-            PRODUCT_CONTROLLER.findAll();
+            PRODUCT_CONTROLLER.findAllProducts();
         }
+
         //If there are no products in the database
         catch (ProductException e) {
             log.info(e.getMessage());
             PRODUCT_CONTROLLER.addAll();
-        } catch (Exception e) {
+        }
+
+        catch (Exception e) {
             log.error("Severe error: {}", e.getMessage());
             System.exit(0);
         }
@@ -76,8 +80,9 @@ public final class Main {
         do {
             try {
                 switch (readEnum(MenuOption.class)) {
+
                     case SHOW_AVAILABLE_PRODUCTS -> {
-                        PRODUCT_CONTROLLER.findAll().forEach(System.out::println);
+                        PRODUCT_CONTROLLER.findAllProducts().forEach(System.out::println);
                         System.out.println();
                     }
 
@@ -90,13 +95,16 @@ public final class Main {
                         break loop;
                     }
                 }
-            } catch (InputMismatchException e) {
+            }
+            catch (InputMismatchException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
                 System.exit(0);
-            } catch (ProductException e) {
+            }
+            catch (ProductException e) {
                 log.error("{}, restart the program! ", e.getMessage());
                 System.exit(0);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 log.error(e.getMessage());
             }
 
@@ -116,12 +124,13 @@ public final class Main {
 
                     case SHOW_ORDERS -> ORDER_CONTROLLER.findAll(client).forEach(System.out::println);
 
-                    case PLACE_AN_ORDER -> ORDER_CONTROLLER.create(client, PRODUCT_CONTROLLER.findAll());
+                    case PLACE_AN_ORDER -> ORDER_CONTROLLER.create(client, PRODUCT_CONTROLLER.findAllProducts());
 
-                    case DELETE_ORDER_PLACED -> {
-                        //Todo continue
-                        //ORDER_CONTROLLER.delete();
+                    case DELETE_ORDERS_PLACED -> {
+                        final Set<Order> orders = ORDER_CONTROLLER.find(client);
+                        ORDER_CONTROLLER.delete(orders).forEach(System.out::println);
                     }
+
 
                     case LOGOUT -> {
                         log.info("{} has left the system!", client.getUsername());
@@ -129,13 +138,16 @@ public final class Main {
                     }
                 }
 
-            } catch (ProductException e) {
+            }
+            catch (ProductException e) {
                 log.error("{}, restart the program! ", e.getMessage());
                 System.exit(0);
-            } catch (InputMismatchException | IndexOutOfBoundsException e) {
+            }
+            catch (InputMismatchException | IndexOutOfBoundsException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
                 System.exit(0);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 log.error(e.getMessage());
             }
 

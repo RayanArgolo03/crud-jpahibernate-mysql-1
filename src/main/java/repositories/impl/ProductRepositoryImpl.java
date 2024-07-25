@@ -1,7 +1,6 @@
 package repositories.impl;
 
-import jakarta.persistence.EntityManager;
-import utils.TransactionManagerUtils;
+import jpa.JpaTransactionManager;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,18 +15,28 @@ import java.util.stream.Collectors;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class ProductRepositoryImpl implements ProductRepository {
 
-    EntityManager em;
+    JpaTransactionManager transactionManager;
 
     @Override
     public LinkedHashSet<Product> findAll() {
-        return em.createQuery("SELECT p FROM Product p ORDER BY p.name DESC", Product.class)
+
+        final LinkedHashSet<Product> products = transactionManager.getEntityManager()
+                .createQuery("""
+                        SELECT p
+                        FROM Product p
+                        JOIN FETCH p.categories
+                        ORDER BY p.name DESC
+                        """, Product.class)
                 .getResultStream()
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        transactionManager.clearContextPersistence();
+        return products;
     }
 
     @Override
     public void addAll(final Set<Product> mockProducts) {
-        TransactionManagerUtils.executePersistence(em, (aux) -> mockProducts.forEach(aux::persist));
+        transactionManager.execute((aux) -> mockProducts.forEach(aux::persist));
     }
 
 }

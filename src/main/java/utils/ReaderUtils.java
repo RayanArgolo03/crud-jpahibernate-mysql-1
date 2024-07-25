@@ -13,7 +13,7 @@ import java.util.Scanner;
 public final class ReaderUtils {
     static Scanner SCANNER = new Scanner(System.in);
 
-    public static <E extends Enum<E>> E readEnum(Class<E> enumClass) {
+    public static <E extends Enum<E>> E readEnum(final Class<E> enumClass) {
 
         final E[] enums = enumClass.getEnumConstants();
         for (E e : enums) System.out.printf("%d - %s\n", (e.ordinal() + 1), e);

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.DynamicInsert;
-import utils.FormatterUtils;
+import utils.FormatterCurrencyUtils;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -38,7 +38,7 @@ public final class OrderItem {
     }
 
     private String getTotal() {
-        return FormatterUtils.formatCurrency(product.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
+        return FormatterCurrencyUtils.formatCurrency(product.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
     }
 
     public void increaseQuantity(int quantity) {

@@ -18,11 +18,13 @@ public final class ProductController {
 
     public void addAll() {
         log.info("Products not found, adding mock products..");
+
         service.addProducts();
+        log.info("Products added!");
     }
 
     //Using linked hash set to preserve initial order
-    public LinkedHashSet<Product> findAll() {
+    public LinkedHashSet<Product> findAllProducts() {
         log.info("Finding products in database..\n");
         return service.findProducts();
     }

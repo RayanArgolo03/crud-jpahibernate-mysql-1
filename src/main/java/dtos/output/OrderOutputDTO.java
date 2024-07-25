@@ -11,6 +11,7 @@ import java.util.Set;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class OrderOutputDTO {
 
+    String clientName;
     String dateFormatted;
     Set<OrderItem> items;
     String total;
@@ -18,7 +19,9 @@ public final class OrderOutputDTO {
     @Override
     public String toString() {
 
-        final StringBuilder sb = new StringBuilder("\n          ------ " + dateFormatted + "  ------ ");
+        final StringBuilder sb = new StringBuilder(" --> Order made by " + clientName);
+
+        sb.append("\n          ------ ").append(dateFormatted).append("  ------ ");
         sb.append("\n");
 
         items.forEach(i -> sb.append(i).append("\n"));

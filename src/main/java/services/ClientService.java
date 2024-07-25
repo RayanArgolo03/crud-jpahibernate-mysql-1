@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import model.client.Client;
 import repositories.interfaces.ClientRepository;
-import utils.FormatterUtils;
 
 import java.util.Objects;
 
@@ -33,7 +32,7 @@ public final class ClientService {
             throw new ClientException("Name contains special character!");
         }
 
-        return FormatterUtils.formatName(name);
+        return name.substring(0, 1).toUpperCase().concat(name.substring(1).toLowerCase());
     }
 
     public void validatePassword(final String password) {
@@ -58,7 +57,9 @@ public final class ClientService {
 
         try {
             repository.save(client);
-        } catch (DatabaseException e) {
+            System.out.println();
+        }
+        catch (DatabaseException e) {
             throw new ClientException(String.format("Error in save client: %s", e.getMessage()), e);
         }
 
@@ -70,9 +71,9 @@ public final class ClientService {
         Objects.requireNonNull(password, "Password can´t be null! Problem in mapping");
 
         return repository.findClient(username, password)
-                .orElseThrow(() -> new ClientException(
-                        String.format("Client with username %s not found!", username)
-                ));
+                .orElseThrow(
+                        () -> new ClientException(String.format("Client with username %s not found!", username))
+                );
     }
 
 }

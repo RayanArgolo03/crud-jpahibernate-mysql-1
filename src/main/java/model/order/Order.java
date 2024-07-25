@@ -6,10 +6,13 @@ import lombok.experimental.FieldDefaults;
 import model.client.Client;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
-import utils.FormatterUtils;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import utils.FormatterCurrencyUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -33,8 +36,9 @@ public final class Order {
     @JoinColumn(name = "id_client")
     Client client;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "id_order")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     Set<OrderItem> orderItems;
 
     @CreationTimestamp
@@ -47,7 +51,7 @@ public final class Order {
     }
 
     public String getFormattedDate() {
-        return FormatterUtils.formatDate(createdAt);
+        return createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 
     public String getTotal() {
@@ -56,6 +60,6 @@ public final class Order {
                 .map(i -> i.getProduct().getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return FormatterUtils.formatCurrency(total);
+        return FormatterCurrencyUtils.formatCurrency(total);
     }
 }

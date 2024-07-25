@@ -1,13 +1,15 @@
 package model.order;
 
 import enums.Category;
-import exceptions.ProductException;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
-import utils.FormatterUtils;
+import utils.FormatterCurrencyUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,10 +37,11 @@ public final class Product {
     @Column(name = "unit_price", nullable = false)
     BigDecimal unitPrice;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "categories",
             joinColumns = @JoinColumn(name = "id"),
-            foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id) REFERENCES products(id) ON DELETE CASCADE"))
+            foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id) REFERENCES products(id) ON DELETE CASCADE")
+    )
     @Enumerated(value = EnumType.STRING)
     @Column(name = "name", nullable = false)
     Set<Category> categories;
@@ -48,14 +51,13 @@ public final class Product {
     LocalDateTime createdAt;
 
     private String getFirstCategoryFormattedName() {
-        if (categories.isEmpty()) throw new ProductException(String.format("Without categories in product %s! ", name));
         return categories.stream().findFirst().get().getFormattedName();
     }
 
     @Override
     public String toString() {
         return String.format("%s with unit price %s of %s category", name,
-                FormatterUtils.formatCurrency(unitPrice),
+                FormatterCurrencyUtils.formatCurrency(unitPrice),
                 Objects.requireNonNull(getFirstCategoryFormattedName(), "Category name can´t be null!")
         );
     }
