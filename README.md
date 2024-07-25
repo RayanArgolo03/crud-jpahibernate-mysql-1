@@ -11,7 +11,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Criteria 🛠
 ## Banco de Dados
 - MariaDB 
-- H2 Database em memória para Testes Unitários
+- H2 Database para testes integrados
 ## Frameworks
 - Lombok
 - Mapstruct
