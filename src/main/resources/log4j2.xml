@@ -6,7 +6,12 @@
         </Console>
     </Appenders>
     <Loggers>
+
         <Logger name="org.hibernate" level="OFF" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+
+        <Logger name="org.hibernate.type.descriptor.s" level="OFF" additivity="false">
             <AppenderRef ref="LogToConsole"/>
         </Logger>
 

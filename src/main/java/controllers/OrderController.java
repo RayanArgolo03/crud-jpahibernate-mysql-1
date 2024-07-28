@@ -12,7 +12,6 @@ import model.order.Order;
 import model.order.Product;
 import services.OrderService;
 
-import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,7 +43,7 @@ public final class OrderController {
                 .collect(Collectors.toSet());
     }
 
-    public void create(final Client client, final LinkedHashSet<Product> products) {
+    public void create(final Client client, final Set<Product> products) {
 
         final Order order = service.placeOrder(client, products);
 

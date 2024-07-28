@@ -10,7 +10,7 @@ import model.order.Product;
 import repositories.interfaces.ProductRepository;
 import utils.GetMockProductsUtils;
 
-import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Log4j2
 @AllArgsConstructor
@@ -19,15 +19,16 @@ public final class ProductService {
 
     ProductRepository repository;
 
-    public LinkedHashSet<Product> findProducts() {
+    public Set<Product> findAll() {
 
-        final LinkedHashSet<Product> products = repository.findAll();
+        final Set<Product> products = repository.findAll();
         if (products.isEmpty()) throw new ProductException("There are no products in the database!");
 
         return products;
     }
 
-    public void addProducts() {
+    public void addAll() {
+
         try {
             repository.addAll(GetMockProductsUtils.getMockProducts());
         }

@@ -101,7 +101,7 @@ public final class OrderService {
 
     }
 
-    public Order placeOrder(final Client client, final LinkedHashSet<Product> products) {
+    public Order placeOrder(final Client client, final Set<Product> products) {
 
         //Keeps the purchase order with LinkedHashSet
         final Set<OrderItem> orderItems = new LinkedHashSet<>();

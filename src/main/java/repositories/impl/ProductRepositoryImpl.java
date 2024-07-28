@@ -7,8 +7,9 @@ import lombok.experimental.FieldDefaults;
 import model.order.Product;
 import repositories.interfaces.ProductRepository;
 
-import java.util.LinkedHashSet;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -18,25 +19,25 @@ public final class ProductRepositoryImpl implements ProductRepository {
     JpaTransactionManager transactionManager;
 
     @Override
-    public LinkedHashSet<Product> findAll() {
+    public Set<Product> findAll() {
 
-        final LinkedHashSet<Product> products = transactionManager.getEntityManager()
+        //Returning ordered products by tree set
+        final Set<Product> products = transactionManager.getEntityManager()
                 .createQuery("""
                         SELECT p
                         FROM Product p
                         JOIN FETCH p.categories
-                        ORDER BY p.name DESC
                         """, Product.class)
                 .getResultStream()
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Product::getName))));
 
         transactionManager.clearContextPersistence();
         return products;
     }
 
     @Override
-    public void addAll(final Set<Product> mockProducts) {
-        transactionManager.execute((aux) -> mockProducts.forEach(aux::persist));
+    public void addAll(final Set<Product> products) {
+        transactionManager.execute((aux) -> products.forEach(aux::persist));
     }
 
 }

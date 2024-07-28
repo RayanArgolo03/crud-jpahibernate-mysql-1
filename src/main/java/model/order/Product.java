@@ -61,5 +61,4 @@ public final class Product {
                 Objects.requireNonNull(getFirstCategoryFormattedName(), "Category name can´t be null!")
         );
     }
-
 }

@@ -7,7 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import model.order.Product;
 import services.ProductService;
 
-import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Log4j2
 @AllArgsConstructor
@@ -17,15 +17,16 @@ public final class ProductController {
     ProductService service;
 
     public void addAll() {
+
         log.info("Products not found, adding mock products..");
 
-        service.addProducts();
+        service.addAll();
         log.info("Products added!");
     }
 
     //Using linked hash set to preserve initial order
-    public LinkedHashSet<Product> findAllProducts() {
+    public Set<Product> findAllProducts() {
         log.info("Finding products in database..\n");
-        return service.findProducts();
+        return service.findAll();
     }
 }
