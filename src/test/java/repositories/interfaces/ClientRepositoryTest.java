@@ -12,13 +12,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ClientRepositoryTest {
 
     private ClientRepository repository;
-    private String username;
-
+    private Client client;
 
     @BeforeEach
     void setUp() {
         repository = new ClientRepositoryImpl(new JpaTransactionManager("h2"));
-        username = "abcd";
+        client = Client.builder()
+                .name("abcd")
+                .username("abcd")
+                .password("abcd")
+                .cpf("12112122192")
+                .build();
     }
 
     @Nested
@@ -27,23 +31,13 @@ class ClientRepositoryTest {
 
         @Test
         void givenFindUsername_whenUsernameFound_thenReturnOptionalOfUsername() {
-
-            final Client client = Client.builder()
-                    .name(username)
-                    .username(username)
-                    .password(username)
-                    .cpf("12112122192")
-                    .build();
-
             repository.save(client);
-
             assertEquals(Optional.of(client.getUsername()), repository.findUsername(client.getUsername()));
-
         }
 
         @Test
         void givenFindUsername_whenUsernameNotFound_thenReturnOptionalEmpty() {
-            assertEquals(Optional.empty(), repository.findUsername(username));
+            assertEquals(Optional.empty(), repository.findUsername(client.getUsername()));
         }
     }
 
@@ -54,20 +48,27 @@ class ClientRepositoryTest {
 
         @Test
         void givenFindClient_whenClientFound_thenReturnOptionalOfClient() {
-
-            final Client client = Client.builder()
-                    .name(username)
-                    .username(username)
-                    .password(username)
-                    .cpf("12112122192")
-                    .build();
-
             repository.save(client);
-
-            assertEquals(Optional.of(client), repository.findClient("abcd", "abcd"));
+            assertEquals(Optional.of(client), repository.findClient(client.getUsername(), client.getPassword()));
         }
 
-    }
+        @Test
+        void givenFindClient_whenClientNotFound_thenReturnOptionalEmpty() {
+            assertEquals(Optional.empty(), repository.findClient(client.getUsername(), client.getPassword()));
+        }
 
+        @Test
+        void givenFindClient_whenClientIsFindByUsernameWithDifferentCaseButNotFound_thenReturnOptionalEmpty() {
+
+            String username = client.getUsername().toLowerCase().substring(0, 1)
+                    .concat(
+                            client.getUsername().toUpperCase().substring(1)
+                    );
+
+            assertEquals(Optional.empty(), repository.findClient(username, client.getPassword()));
+        }
+
+
+    }
 
 }
