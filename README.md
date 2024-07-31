@@ -17,8 +17,9 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Mapstruct
 - Hibernate️
 # Testes
-- Junit5 🛠️
-- Mockito 🛠
+- Junit5
+- Parameterised Tests
+- Mockito 
 - SystemLambda (Testes inputs System.in)
 # Build
 - Maven
