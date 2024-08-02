@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.DynamicInsert;
-import utils.FormatterCurrencyUtils;
+import utils.FormatterUtils;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
+@ToString
 @EqualsAndHashCode
 
 @Entity
@@ -32,17 +33,11 @@ public final class OrderItem {
     @Column(name = "quantity", columnDefinition = "int default 10", nullable = false)
     int quantity;
 
-    @Override
-    public String toString() {
-        return String.format("%s - %d units purchased - Total %s", product, quantity, getTotal());
-    }
-
-    private String getTotal() {
-        return FormatterCurrencyUtils.formatCurrency(product.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
+    public String getTotal() {
+        return FormatterUtils.formatCurrency(product.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
     }
 
     public void increaseQuantity(int quantity) {
         this.quantity += quantity;
     }
-
 }

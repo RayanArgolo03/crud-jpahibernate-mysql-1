@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import utils.FormatterCurrencyUtils;
+import utils.FormatterUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,6 +22,8 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
+@ToString
+@EqualsAndHashCode
 
 @Entity
 @DynamicInsert
@@ -60,6 +62,6 @@ public final class Order {
                 .map(i -> i.getProduct().getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return FormatterCurrencyUtils.formatCurrency(total);
+        return FormatterUtils.formatCurrency(total);
     }
 }
