@@ -11,8 +11,6 @@ import java.util.Scanner;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class ReaderUtils {
-    static Scanner SCANNER = new Scanner(System.in);
-
     public static <E extends Enum<E>> E readEnum(final Class<E> enumClass) {
 
         final E[] enums = enumClass.getEnumConstants();
@@ -23,21 +21,19 @@ public final class ReaderUtils {
 
     public static Product readProduct(final List<Product> products) {
 
-        products.forEach(p -> {
-            System.out.printf("%d - %s\n", products.indexOf(p) + 1, p);
-        });
+        products.forEach(p -> System.out.printf("%d - %s\n", products.indexOf(p) + 1, p));
 
         return products.get(readInt("product to buy") - 1);
     }
 
     public static int readInt(final String title) {
         System.out.printf("Enter with %s: ", title);
-        return SCANNER.nextInt();
+        return new Scanner(System.in).nextInt();
     }
 
     public static String readString(final String title) {
         System.out.printf("Enter with %s: ", title);
-        return SCANNER.next();
+        return new Scanner(System.in).next();
     }
 
 }

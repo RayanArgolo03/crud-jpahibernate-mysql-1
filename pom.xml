@@ -107,12 +107,11 @@
             <version>6.4.4.Final</version>
         </dependency>
 
-
-        <!-- https://mvnrepository.com/artifact/com.github.stefanbirkner/system-lambda -->
+        <!-- https://mvnrepository.com/artifact/uk.org.webcompere/system-stubs-jupiter -->
         <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-            <version>1.2.1</version>
+            <groupId>uk.org.webcompere</groupId>
+            <artifactId>system-stubs-jupiter</artifactId>
+            <version>2.1.6</version>
             <scope>test</scope>
         </dependency>
 
