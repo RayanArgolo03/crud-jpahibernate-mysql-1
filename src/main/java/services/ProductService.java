@@ -12,6 +12,8 @@ import utils.GetMockProductsUtils;
 
 import java.util.Set;
 
+import static java.lang.String.format;
+
 @Log4j2
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -30,10 +32,10 @@ public final class ProductService {
     public void addAll() {
 
         try {
-            repository.addAll(GetMockProductsUtils.getMockProducts());
+            repository.saveAll(GetMockProductsUtils.getMockProducts());
         }
         catch (DatabaseException e) {
-            throw new ProductException(String.format("Error in add all products: %s", e.getMessage()), e);
+            throw new ProductException(format("Error in add all products: %s", e.getMessage()), e);
         }
     }
 }

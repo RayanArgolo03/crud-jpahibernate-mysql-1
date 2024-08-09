@@ -36,7 +36,7 @@ public final class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public void addAll(final Set<Product> products) {
+    public void saveAll(final Set<Product> products) {
         transactionManager.executeAction((aux) -> products.forEach(aux::persist));
     }
 

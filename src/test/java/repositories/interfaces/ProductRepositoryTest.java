@@ -49,7 +49,7 @@ class ProductRepositoryTest {
         @Test
         void givenFindAll_whenProductsFound_thenReturnOrderedProductsSet() {
 
-            repository.addAll(productsExpected);
+            repository.saveAll(productsExpected);
             final Set<Product> productsActual = repository.findAll();
 
             assertNotNull(productsActual);
@@ -65,7 +65,7 @@ class ProductRepositoryTest {
         @Test
         void givenAddAll_whenProductsHaveBeenAdded_thenFindThemInDatabase() {
 
-            repository.addAll(productsExpected);
+            repository.saveAll(productsExpected);
             productsExpected.forEach(p -> assertNotNull(p.getId()));
 
             final Set<Product> productsActual = repository.findAll();

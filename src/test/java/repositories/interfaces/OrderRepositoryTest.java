@@ -41,7 +41,7 @@ class OrderRepositoryTest {
         new ClientRepositoryImpl(manager).save(client);
 
         product = new Product(null, "Banana", new BigDecimal("50.00"), Set.of(Category.FOODS), null);
-        new ProductRepositoryImpl(manager).addAll(Set.of(product));
+        new ProductRepositoryImpl(manager).saveAll(Set.of(product));
 
         order = Order.builder().client(client).orderItems(Set.of(OrderItem.builder()
                         .product(product)

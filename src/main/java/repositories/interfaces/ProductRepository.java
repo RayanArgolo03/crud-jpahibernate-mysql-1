@@ -8,6 +8,6 @@ public interface ProductRepository {
 
     Set<Product> findAll();
 
-    void addAll(Set<Product> products);
+    void saveAll(Set<Product> products);
 
 }
