@@ -22,7 +22,6 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
-@ToString
 @EqualsAndHashCode
 
 @Entity

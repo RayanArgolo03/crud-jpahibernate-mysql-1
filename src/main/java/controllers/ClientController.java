@@ -5,11 +5,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
-import mappers.ClientMapper;
 import model.client.Client;
 import services.ClientService;
 
-import static utils.ReaderUtils.readString;
+import static utils.ReaderUtils.readMockedString;
 
 @Log4j2
 @AllArgsConstructor
@@ -17,7 +16,6 @@ import static utils.ReaderUtils.readString;
 public final class ClientController {
 
     ClientService service;
-    ClientMapper mapper;
 
     public Client create() {
 
@@ -42,21 +40,21 @@ public final class ClientController {
         cpf = service.validateAndFormatCpf(cpf);
 
         final ClientInputDTO inputDTO = new ClientInputDTO(username, name, password, cpf);
-        final Client client = mapper.inputToClient(inputDTO);
+        final Client client = service.mapperToClient(inputDTO);
 
         service.saveClient(client);
-        log.info("{} online!", mapper.clientToOutput(client));
+        log.info("{} online!", service.mapperToOutput(client));
 
         return client;
     }
 
     public Client login() {
 
-        final String username = readString("username");
-        final String password = readString("password");
+        final String username = readMockedString("username");
+        final String password = readMockedString("password");
 
         final Client client = service.findClient(username, password);
-        log.info("{} online!", mapper.clientToOutput(client));
+        log.info("{} online!", service.mapperToOutput(client));
 
         return client;
     }

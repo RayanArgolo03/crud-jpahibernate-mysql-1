@@ -2,14 +2,11 @@ package model.order;
 
 import enums.Category;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
-import utils.FormatterCurrencyUtils;
+import utils.FormatterUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
+@EqualsAndHashCode
 
 @Entity
 @DynamicInsert
@@ -57,7 +55,7 @@ public final class Product {
     @Override
     public String toString() {
         return String.format("%s with unit price %s of %s category", name,
-                FormatterCurrencyUtils.formatCurrency(unitPrice),
+                FormatterUtils.formatCurrency(unitPrice),
                 Objects.requireNonNull(getFirstCategoryFormattedName(), "Category name can´t be null!")
         );
     }

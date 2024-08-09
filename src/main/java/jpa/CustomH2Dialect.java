@@ -12,10 +12,12 @@ public class CustomH2Dialect extends H2Dialect {
 
         BasicTypeRegistry basicTypeRegistry = functionContributions.getTypeConfiguration().getBasicTypeRegistry();
 
-        functionContributions.getFunctionRegistry().registerPattern(
-                "BINARY",
-                "(?1)",
+        functionContributions.getFunctionRegistry().registerPattern("BINARY", "(?1)",
                 basicTypeRegistry.resolve(StandardBasicTypes.STRING));
-        // ...
+
+        functionContributions.getFunctionRegistry().registerPattern("DATE", "FORMATDATETIME(?1, 'yyyy-MM-dd')",
+                basicTypeRegistry.resolve(StandardBasicTypes.LOCAL_DATE));
+
+
     }
 }

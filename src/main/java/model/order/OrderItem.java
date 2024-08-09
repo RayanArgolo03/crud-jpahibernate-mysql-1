@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 import utils.FormatterUtils;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
 @Builder
@@ -15,7 +16,6 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @ToString
-@EqualsAndHashCode
 
 @Entity
 @DynamicInsert
@@ -37,7 +37,18 @@ public final class OrderItem {
         return FormatterUtils.formatCurrency(product.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
     }
 
-    public void increaseQuantity(int quantity) {
-        this.quantity += quantity;
+    public void increaseQuantity(int quantity) {this.quantity += quantity;}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderItem orderItem = (OrderItem) o;
+        return Objects.equals(product, orderItem.product);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(product);
     }
 }

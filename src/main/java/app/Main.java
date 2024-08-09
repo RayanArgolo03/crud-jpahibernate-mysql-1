@@ -40,14 +40,14 @@ public final class Main {
 
         System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
 
-        TRANSACTION_MANAGER = new JpaTransactionManager("mariadb");
+        TRANSACTION_MANAGER = new JpaTransactionManager("h2");
 
         CLIENT_CONTROLLER = new ClientController(
-                new ClientService(new ClientRepositoryImpl(TRANSACTION_MANAGER)), ClientMapper.INSTANCE
+                new ClientService(new ClientRepositoryImpl(TRANSACTION_MANAGER), ClientMapper.INSTANCE)
         );
 
         ORDER_CONTROLLER = new OrderController(
-                new OrderService(new OrderRepositoryImpl(TRANSACTION_MANAGER)), OrderMapper.INSTANCE
+                new OrderService(new OrderRepositoryImpl(TRANSACTION_MANAGER), OrderMapper.INSTANCE)
         );
 
         PRODUCT_CONTROLLER = new ProductController(

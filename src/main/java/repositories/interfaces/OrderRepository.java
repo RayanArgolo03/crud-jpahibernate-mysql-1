@@ -6,12 +6,11 @@ import model.order.Order;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 public interface OrderRepository {
 
-    LinkedHashSet<Order> findAll(Client client);
+    Set<Order> findAll(Client client);
 
     Set<Order> findByOrderDate(Client client, LocalDate orderDate);
 

@@ -241,9 +241,10 @@ class ClientServiceTest {
             final ClientException e = assertThrows(ClientException.class,
                     () -> service.saveClient(client));
 
+            assertNotNull(e.getCause());
+
             final String expected = format("Error in save client: %s", e.getCause().getMessage());
 
-            assertNotNull(e.getCause());
             assertEquals(DatabaseException.class, e.getCause().getClass());
             assertEquals(expected, e.getMessage());
 
@@ -379,6 +380,7 @@ class ClientServiceTest {
             assertEquals(inputDTO.getName(), client.getName());
             assertEquals(inputDTO.getCpf(), client.getCpf());
 
+            verify(mapper).inputToClient(inputDTO);
         }
 
 
@@ -406,10 +408,9 @@ class ClientServiceTest {
             assertNotNull(outputDTO);
             assertEquals(outputDTO.getId(), client.getId());
             assertEquals(outputDTO.getClientUsername(), client.getUsername());
-            assertEquals(outputDTO.getSinceDateFormatted(),
-                    client.getCreatedAt().format(formatter));
+            assertEquals(outputDTO.getSinceDateFormatted(),client.getCreatedAt().format(formatter));
 
-
+            verify(mapper).clientToOutput(client);
         }
 
         @Test

@@ -1,11 +1,11 @@
 package repositories.impl;
 
+import jpa.JpaTransactionManager;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import model.client.Client;
 import repositories.interfaces.ClientRepository;
-import jpa.JpaTransactionManager;
 
 import java.util.Optional;
 
@@ -18,7 +18,7 @@ public final class ClientRepositoryImpl implements ClientRepository {
     @Override
     public Optional<String> findUsername(final String username) {
 
-        Optional<String> optionalUsername = transactionManager.getEntityManager()
+        final Optional<String> optionalUsername = transactionManager.getEntityManager()
                 .createQuery("SELECT c.username FROM Client c WHERE c.username = :username", String.class)
                 .setParameter("username", username)
                 .getResultStream()
@@ -31,7 +31,7 @@ public final class ClientRepositoryImpl implements ClientRepository {
     @Override
     public Optional<Client> findClient(final String username, final String password) {
 
-        Optional<Client> optionalClient = transactionManager.getEntityManager()
+        final Optional<Client> optionalClient = transactionManager.getEntityManager()
                 .createQuery("""
                         SELECT c
                         FROM Client c
@@ -49,6 +49,6 @@ public final class ClientRepositoryImpl implements ClientRepository {
 
     @Override
     public void save(final Client client) {
-        transactionManager.execute((aux) -> aux.persist(client));
+        transactionManager.executeAction((aux) -> aux.persist(client));
     }
 }

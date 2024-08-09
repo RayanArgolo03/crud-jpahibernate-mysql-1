@@ -9,12 +9,12 @@ import org.hibernate.annotations.DynamicInsert;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(force = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
+@ToString
 @EqualsAndHashCode
 
 @Entity
@@ -42,4 +42,5 @@ public final class Client {
     @Column(name = "created_at", nullable = false)
     LocalDateTime createdAt;
 }
+
 

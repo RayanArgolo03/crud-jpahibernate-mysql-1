@@ -11,27 +11,31 @@ import java.util.Scanner;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class ReaderUtils {
+
+    private static final Scanner SCANNER_MOCKED = new Scanner(System.in);
+
     public static <E extends Enum<E>> E readEnum(final Class<E> enumClass) {
 
         final E[] enums = enumClass.getEnumConstants();
-        for (E e : enums) System.out.printf("%d - %s\n", (e.ordinal() + 1), e);
+        for (int i = 0; i < enums.length; i++) System.out.printf("%d - %s\n", i, enums[i]);
 
-        return enums[readInt("your choice") - 1];
+        int option = Integer.parseInt(readMockedString("your choice"));
+        System.out.println();
+
+        return enums[option];
     }
 
     public static Product readProduct(final List<Product> products) {
-
-        products.forEach(p -> System.out.printf("%d - %s\n", products.indexOf(p) + 1, p));
-
-        return products.get(readInt("product to buy") - 1);
+        for (int i = 0; i < products.size(); i++) System.out.printf("%d - %s\n", i, products.get(i));
+        return products.get(Integer.parseInt(readMockedString("product to buy")));
     }
 
-    public static int readInt(final String title) {
+    public static String readMockedString(final String title) {
         System.out.printf("Enter with %s: ", title);
-        return new Scanner(System.in).nextInt();
+        return SCANNER_MOCKED.next();
     }
 
-    public static String readString(final String title) {
+    public static String readSimpleString(final String title) {
         System.out.printf("Enter with %s: ", title);
         return new Scanner(System.in).next();
     }

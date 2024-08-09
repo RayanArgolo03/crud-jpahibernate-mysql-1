@@ -6,6 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Category {
-    FOODS("Foods"), ELETRONICS("Eletronics");
+    ELETRONICS("Eletronics"), FOODS("Foods");
     private final String formattedName;
 }

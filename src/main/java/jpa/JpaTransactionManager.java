@@ -7,12 +7,14 @@ import jakarta.persistence.Persistence;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Log4j2
 public final class JpaTransactionManager {
 
     EntityManager entityManager;
@@ -22,7 +24,7 @@ public final class JpaTransactionManager {
                 .createEntityManager();
     }
 
-    public void execute(final Consumer<EntityManager> action) {
+    public void executeAction(final Consumer<EntityManager> action) {
 
         EntityTransaction transaction = null;
         try {
@@ -32,12 +34,15 @@ public final class JpaTransactionManager {
             transaction.commit();
         }
         catch (Exception e) {
-            if (Objects.nonNull(transaction)) transaction.rollback();
+            if (Objects.nonNull(transaction)) {
+                try {transaction.rollback();} catch (Exception ee){log.error(ee.getMessage());}
+            }
             throw new DatabaseException(e.getCause().getMessage(), e);
         }
         finally {
-           this.clearContextPersistence();
+            clearContextPersistence();
         }
+
     }
 
     public void clearContextPersistence() {entityManager.clear();}
