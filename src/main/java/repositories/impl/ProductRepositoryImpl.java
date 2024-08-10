@@ -10,7 +10,6 @@ import repositories.interfaces.ProductRepository;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -22,16 +21,15 @@ public final class ProductRepositoryImpl implements ProductRepository {
     public Set<Product> findAll() {
 
         //Returning ordered products by tree set
-        final Set<Product> products = transactionManager.getEntityManager()
-                .createQuery("""
-                        SELECT p
-                        FROM Product p
-                        JOIN FETCH p.categories
-                        """, Product.class)
-                .getResultStream()
-                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Product::getName))));
+        final Set<Product> products = new TreeSet<>(Comparator.comparing(Product::getName));
 
-        transactionManager.clearContextPersistence();
+        products.addAll(
+                transactionManager.getEntityManager()
+                        .createQuery("SELECT p FROM Product p", Product.class)
+                        .getResultList()
+        );
+
+       transactionManager.clearContextPersistence();
         return products;
     }
 

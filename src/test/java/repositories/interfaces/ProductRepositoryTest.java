@@ -23,6 +23,7 @@ class ProductRepositoryTest {
     private ProductRepository repository;
     private Set<Product> productsExpected;
 
+
     @BeforeEach
     void setUp() {
         repository = new ProductRepositoryImpl(new JpaTransactionManager("h2"));
@@ -33,7 +34,7 @@ class ProductRepositoryTest {
                 new Product(null, "Strawberry", new BigDecimal("2.00"), Set.of(Category.FOODS), null)
         ));
     }
-    
+
     @Nested
     @DisplayName("** FindAll products tests **")
     class FindAllTests {
