@@ -1,10 +1,12 @@
 package model.order;
 
 import enums.Category;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import utils.FormatterUtils;
 
@@ -29,23 +31,12 @@ public final class Product {
     @GeneratedValue
     UUID id;
 
-    @Column(name = "name", unique = true, nullable = false)
     String name;
 
-    @Column(name = "unit_price", nullable = false)
     BigDecimal unitPrice;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "categories",
-            joinColumns = @JoinColumn(name = "id"),
-            foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id) REFERENCES products(id) ON DELETE CASCADE")
-    )
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "name", nullable = false)
     Set<Category> categories;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
     LocalDateTime createdAt;
 
     private String getFirstCategoryFormattedName() {

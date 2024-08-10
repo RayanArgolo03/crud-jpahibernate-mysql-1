@@ -1,13 +1,11 @@
 package model.order;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import model.client.Client;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import utils.FormatterUtils;
 
 import java.math.BigDecimal;
@@ -29,21 +27,16 @@ import java.util.UUID;
 @Table(name = "orders")
 public final class Order {
 
-    @Id
-    @GeneratedValue
+
     UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_client")
+
     Client client;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_order")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+
     Set<OrderItem> orderItems;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+
     LocalDateTime createdAt;
 
     //Deffensive programing

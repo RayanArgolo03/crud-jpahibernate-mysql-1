@@ -26,11 +26,9 @@ public final class OrderItem {
     @GeneratedValue
     UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_product")
+
     final Product product;
 
-    @Column(name = "quantity", columnDefinition = "int default 10", nullable = false)
     int quantity;
 
     public String getTotal() {
