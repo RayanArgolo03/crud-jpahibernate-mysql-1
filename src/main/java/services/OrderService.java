@@ -176,6 +176,8 @@ public final class OrderService {
 
     public void save(Order order) {
         try {
+            //bidirectional save
+            order.getOrderItems().forEach(oi -> oi.setOrder(order));
             repository.save(order);
         } catch (DatabaseException e) {
             throw new OrderException(format("Error in save new order: %s", e.getMessage()), e);

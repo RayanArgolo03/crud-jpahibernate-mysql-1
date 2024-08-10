@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @ToString
@@ -24,18 +24,28 @@ public final class OrderItem {
 
     @Id
     @GeneratedValue
+    @Column(name = "order_item_id")
     UUID id;
 
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    Product product;
 
-    final Product product;
-
+    @Column(nullable = false)
     int quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    @Setter
+    Order order;
 
     public String getTotal() {
         return FormatterUtils.formatCurrency(product.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
     }
 
-    public void increaseQuantity(int quantity) {this.quantity += quantity;}
+    public void increaseQuantity(int quantity) {
+        this.quantity += quantity;
+    }
 
     @Override
     public boolean equals(Object o) {

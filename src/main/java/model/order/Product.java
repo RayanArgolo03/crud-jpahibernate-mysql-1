@@ -1,12 +1,10 @@
 package model.order;
 
 import enums.Category;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import utils.FormatterUtils;
 
@@ -20,7 +18,6 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
-@EqualsAndHashCode
 
 @Entity
 @DynamicInsert
@@ -29,15 +26,29 @@ public final class Product {
 
     @Id
     @GeneratedValue
+    @Column(name = "product_id")
     UUID id;
 
+    @Column(unique = true, nullable = false)
     String name;
 
+    @Column(name = "unit_price", nullable = false)
     BigDecimal unitPrice;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "categories",
+            joinColumns = @JoinColumn(name = "id"),
+            foreignKey= @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id) REFERENCES products(product_id) ON DELETE CASCADE"))
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "category_name")
     Set<Category> categories;
 
+    @CreationTimestamp
+    @Column(name = "created_at")
     LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    Set<OrderItem> orderItems;
 
     private String getFirstCategoryFormattedName() {
         return categories.stream().findFirst().get().getFormattedName();

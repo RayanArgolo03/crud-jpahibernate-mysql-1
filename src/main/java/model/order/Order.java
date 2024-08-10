@@ -1,11 +1,13 @@
 package model.order;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import model.client.Client;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import utils.FormatterUtils;
 
 import java.math.BigDecimal;
@@ -27,16 +29,21 @@ import java.util.UUID;
 @Table(name = "orders")
 public final class Order {
 
-
+    @GeneratedValue
+    @Id
+    @Column(name = "order_id")
     UUID id;
 
-
+    @ManyToOne
+    @JoinColumn(name = "client_id")
     Client client;
 
-
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "order")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     Set<OrderItem> orderItems;
 
-
+    @CreationTimestamp
+    @Column(name = "created_at")
     LocalDateTime createdAt;
 
     //Deffensive programing
@@ -55,5 +62,10 @@ public final class Order {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return FormatterUtils.formatCurrency(total);
+    }
+
+    @Override
+    public String toString() {
+        return "Order items quantity: " + getOrderItems().size();
     }
 }

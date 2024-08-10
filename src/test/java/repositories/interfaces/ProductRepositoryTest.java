@@ -29,8 +29,8 @@ class ProductRepositoryTest {
 
         productsExpected = new TreeSet<>(Comparator.comparing(Product::getName));
         productsExpected.addAll(Set.of(
-                new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null),
-                new Product(null, "Strawberry", new BigDecimal("2.00"), Set.of(Category.FOODS), null)
+                new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null, null),
+                new Product(null, "Strawberry", new BigDecimal("2.00"), Set.of(Category.FOODS), null, null)
         ));
     }
     

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 import repositories.impl.ClientRepositoryImpl;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,6 +23,7 @@ class ClientRepositoryTest {
                 .username("abcd")
                 .password("abcd")
                 .cpf("12112122192")
+                .orders(Set.of())
                 .build();
     }
 

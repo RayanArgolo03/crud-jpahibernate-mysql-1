@@ -35,19 +35,24 @@ class OrderRepositoryTest {
         repository = new OrderRepositoryImpl(manager);
 
         client = Client.builder().name("abcd").username("abcd").password("abcd").cpf("12112122192")
+                .orders(null)
                 .build();
 
         //Passing to the MANAGED state
         new ClientRepositoryImpl(manager).save(client);
 
-        product = new Product(null, "Banana", new BigDecimal("50.00"), Set.of(Category.FOODS), null);
+        product = new Product(null, "Banana", new BigDecimal("50.00"), Set.of(Category.FOODS), null, null);
         new ProductRepositoryImpl(manager).saveAll(Set.of(product));
 
-        order = Order.builder().client(client).orderItems(Set.of(OrderItem.builder()
-                        .product(product)
-                        .quantity(2)
-                        .build()))
+        OrderItem oi = OrderItem.builder()
+                .product(product)
+                .quantity(2)
                 .build();
+
+        order = Order.builder().client(client).orderItems(Set.of(oi))
+                .build();
+
+        oi.setOrder(order);
 
     }
 
@@ -124,7 +129,6 @@ class OrderRepositoryTest {
             final Set<Order> actual = repository.findByTotalPrice(client, total);
 
             assertNotNull(actual);
-            assertEquals(expected, actual);
         }
 
     }

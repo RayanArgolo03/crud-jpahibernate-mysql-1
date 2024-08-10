@@ -432,7 +432,7 @@ class OrderServiceTest {
 
         @BeforeEach
         void setUp() {
-            product = new Product(null, "Tomato", null, null, null);
+            product = new Product(null, "Tomato", null, null, null, null);
         }
 
         @Test
@@ -504,7 +504,7 @@ class OrderServiceTest {
         @BeforeEach
         void setUp() {
             client = Client.builder().build();
-            products = Set.of(new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null));
+            products = Set.of(new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null, null));
         }
 
 
@@ -554,7 +554,9 @@ class OrderServiceTest {
 
         @BeforeEach
         void setUp() {
-            order = Order.builder().build();
+            order = Order.builder()
+                    .orderItems(Set.of(OrderItem.builder().build()))
+                    .build();
         }
 
         @Test
@@ -576,10 +578,11 @@ class OrderServiceTest {
         }
 
         @Test
-        void givenSaveOrder_whenOrderHasBennSaved_thenSetIdInOrder() {
+        void givenSaveOrder_whenOrderHasBeenSaved_thenSetIdInOrder() {
 
             doAnswer((param) -> order = Order.builder()
                     .id(UUID.randomUUID())
+                    .orderItems(Set.of())
                     .build()
             ).when(repository).save(order);
 
@@ -603,7 +606,7 @@ class OrderServiceTest {
         @BeforeEach
         void setUp() {
             OrderItem oi = OrderItem.builder()
-                    .product(new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null))
+                    .product(new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null, null))
                     .quantity(10)
                     .build();
 

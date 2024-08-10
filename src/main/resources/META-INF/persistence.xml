@@ -11,8 +11,8 @@
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             <property name="jakarta.persistence.jdbc.password" value="root"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
-            <!--            <property name="hibernate.show_sql" value="true" />-->
-            <!--            <property name="hibernate.format_sql" value="true" />-->
+<!--            <property name="hibernate.show_sql" value="true"/>-->
+<!--            <property name="hibernate.format_sql" value="true"/>-->
         </properties>
     </persistence-unit>
 
@@ -24,8 +24,8 @@
             <property name="javax.persistence.validation.mode" value="AUTO"/>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
             <property name="hibernate.dialect" value="jpa.CustomH2Dialect"/>
-<!--            <property name="hibernate.show_sql" value="true"/>-->
-<!--            <property name="hibernate.format_sql" value="true"/>-->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
         </properties>
     </persistence-unit>
 

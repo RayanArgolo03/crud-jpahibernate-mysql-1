@@ -51,7 +51,7 @@ class ProductServiceTest {
         @Test
         void givenFindAll_whenProductsFound_thenReturnSetOfProducts() {
 
-            final Product expected = new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null);
+            final Product expected = new Product(null, "Banana", new BigDecimal("1.00"), Set.of(Category.FOODS), null, null);
 
             when(repository.findAll()).thenReturn(Set.of(expected));
 
