@@ -36,7 +36,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Utility Classes
 
 ## Organização das classes
-<img src=''>![img.png](img.png)</img>
+<img src="https://github.com/user-attachments/assets/ee68a04c-4c9b-4d16-ba88-748520d8a0bd"></img>
 
 # Como usar o aplicativo?
 ## Inicialização com Docker Compose
@@ -47,7 +47,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 
 2. Abra o terminal de sua IDE
 
-3. Execute o seguinte comando no terminal para iniciar o MySQL e seu database consumidos pelo app:
+3. Execute o seguinte comando no terminal para iniciar o MariaDB e seu database consumidos pelo app:
 
    ```
    Inicializa database direto no container
@@ -61,7 +61,8 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 
 ## Workflow do projeto
 
-![img_1.png](img_1.png)
+<img src="https://github.com/user-attachments/assets/41ce0018-838e-4b51-9039-3065ede4fb8f"></img>
+
 
 ## Contribuição
 Contribuições são bem-vindas! Sinta-se à vontade para abrir problemas (issues) ou enviar solicitações de pull (pull requests) com melhorias, correções de bugs ou novas funcionalidades.
