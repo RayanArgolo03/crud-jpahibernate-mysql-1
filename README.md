@@ -1,6 +1,6 @@
 # CRUD - Jpa e Hibernate - Relacionamento Bidirecional
 
-Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de estudo e aprendizado de novas tecnologias. Nesta branch, todos os relacionamentos feitos entre as classes são bidirecionais. 
+Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de estudo e aprendizado de novas tecnologias. Nesta branch, todos os relacionamentos feitos entre as classes são feitos de forma bidirecional. 
 
 # Tecnologias utilizadas
 ## Linguagens e convenções
