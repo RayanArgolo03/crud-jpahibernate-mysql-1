@@ -32,7 +32,6 @@ import static utils.ReaderUtils.readEnum;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class Main {
 
-    //# Relacionamentos Bidirecionais
 
     static JpaTransactionManager TRANSACTION_MANAGER;
     static ClientController CLIENT_CONTROLLER;
