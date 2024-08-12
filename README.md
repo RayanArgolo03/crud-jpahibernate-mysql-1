@@ -57,7 +57,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 
 ## Diagrama Entidade Relacional
 
-<img src="https://github.com/user-attachments/assets/36e56d7a-5547-4373-9b85-d250bae4410c"></img>
+<img src="https://github.com/user-attachments/assets/574971e4-5265-4b4f-abe6-78d42de59f33"></img>
 
 ## Workflow do projeto
 
