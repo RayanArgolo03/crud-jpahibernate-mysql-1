@@ -24,12 +24,12 @@ import java.util.UUID;
 @Table(name = "clients")
 public final class Client {
 
-    @Id
     @GeneratedValue
+    @Id
     @Column(name = "client_id")
     UUID id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "user_name", unique = true, nullable = false)
     String username;
 
     @Column(nullable = false)
@@ -38,12 +38,11 @@ public final class Client {
     @Column(nullable = false)
     String password;
 
-    @Column(nullable = false, unique = true, columnDefinition = "varchar (11)")
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(11)")
     String cpf;
 
     @CreationTimestamp
     @Column(name = "created_at")
-    //Sem nullable dado creation timestamp, nunca será nulo
     LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "client")

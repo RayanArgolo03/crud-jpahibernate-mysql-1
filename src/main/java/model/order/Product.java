@@ -2,7 +2,10 @@ package model.order;
 
 import enums.Category;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -19,13 +22,14 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
 
+
 @Entity
 @DynamicInsert
 @Table(name = "products")
 public final class Product {
 
-    @Id
     @GeneratedValue
+    @Id
     @Column(name = "product_id")
     UUID id;
 
@@ -38,7 +42,7 @@ public final class Product {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "categories",
             joinColumns = @JoinColumn(name = "id"),
-            foreignKey= @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id) REFERENCES products(product_id) ON DELETE CASCADE"))
+            foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (id) REFERENCES products(product_id) ON DELETE CASCADE"))
     @Enumerated(value = EnumType.STRING)
     @Column(name = "category_name")
     Set<Category> categories;
@@ -47,7 +51,7 @@ public final class Product {
     @Column(name = "created_at")
     LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product")
     Set<OrderItem> orderItems;
 
     private String getFirstCategoryFormattedName() {

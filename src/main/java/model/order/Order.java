@@ -38,7 +38,10 @@ public final class Order {
     @JoinColumn(name = "client_id")
     Client client;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "order")
+    @OneToMany(cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "order",
+            fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.CASCADE)
     Set<OrderItem> orderItems;
 

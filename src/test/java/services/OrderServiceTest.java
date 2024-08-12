@@ -31,6 +31,7 @@ import utils.GetMockProductsUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static java.lang.String.format;
@@ -177,6 +178,60 @@ class OrderServiceTest {
         }
 
         @Nested
+        @DisplayName("** FindByExactlyHour order tests with System.Lambda library **")
+        class FindByExactlyHourTests {
+
+            private FindOrderOption option;
+            private String hourInString;
+
+            @BeforeEach
+            void setUp() {
+                option = FindOrderOption.EXACTLY_HOUR;
+                hourInString = "10:10";
+            }
+
+
+            @Test
+            @SneakyThrows
+            void givenFindByOption_whenOptionIsExactlyHourAndOrdersNotFoundByExactlyHour_thenThrowOrderException() {
+
+                when(repository.findByExactlyHour(eq(client), any(LocalTime.class))).thenReturn(Set.of());
+
+                SystemStubs.withTextFromSystemIn(hourInString)
+                        .execute(() -> {
+                            final OrderException e = assertThrows(OrderException.class,
+                                    () -> service.findByOption(client, option));
+
+                            final String expected = format("Orders not found by %s", option);
+                            assertEquals(expected, e.getMessage());
+
+                            System.setIn(System.in);
+                        });
+
+                verify(repository).findByExactlyHour(eq(client), any(LocalTime.class));
+            }
+
+            @Test
+            @SneakyThrows
+            void givenFindByOption_whenOptionIsExactlyHourAndOrdersHasBeenFoundByExactlyHour_thenReturnSetOfOrders() {
+
+                when(repository.findByExactlyHour(eq(client), any(LocalTime.class))).thenReturn(Set.of(order));
+
+                SystemStubs.withTextFromSystemIn(hourInString)
+                        .execute(() -> {
+                            final List<Order> orders = new ArrayList<>(service.findByOption(client, option));
+
+                            assertNotNull(orders);
+                            assertFalse(orders.isEmpty());
+                            assertEquals(order, orders.get(0));
+                        });
+
+                verify(repository).findByExactlyHour(eq(client), any(LocalTime.class));
+            }
+        }
+
+
+        @Nested
         @DisplayName("** FindByTotalPrice order tests with System.Lambda library **")
         class FindByTotalPriceTests {
 
@@ -320,6 +375,50 @@ class OrderServiceTest {
             final LocalDate expected = LocalDate.of(2010, 10, 10);
 
             final LocalDate actual = service.validateAndFormatDate(dateInString);
+
+            assertNotNull(actual);
+            assertEquals(expected, actual);
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName("** ValidateAndFormatHour order tests **")
+    class ValidateAndFormatHourTests {
+
+        @Test
+        void givenValidateAndFormatHour_whenHourIsNull_thenThrowNullPointerException() {
+
+            final NullPointerException e = assertThrows(NullPointerException.class,
+                    () -> service.validateAndFormatHour(null));
+
+            final String expected = "Hour can´t be null!";
+            assertEquals(expected, e.getMessage());
+
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"24:00", "25:00", "26:00", "27:00", "28:00", "29:00", "30:00", "31:00", "32:00", "33:00", "34:00", "35:00", "36:00", "37:00", "38:00", "39:00", "40:00", "41:00", "42:00", "43:00", "44:00", "45:00", "46:00", "47:00", "48:00", "49:00", "50:00", "51:00", "52:00", "53:00", "54:00", "55:00", "56:00", "57:00", "58:00", "59:00", "60:00", "61:00", "62:00", "abc", "ha*a", "12:ab", "23:xy", "99:99", "12:34pm", "noon", "midnight", "12:60", "24:60"
+        })
+        void givenValidateAndFormatHour_whenDateDoesNotMatchTheRequiredPattern_thenThrowOrderException(final String hourInString) {
+
+            final OrderException e = assertThrows(OrderException.class,
+                    () -> service.validateAndFormatHour(hourInString));
+
+            final String expected = format("%s is invalid hour!", hourInString);
+            assertEquals(expected, e.getMessage());
+
+
+        }
+
+        @Test
+        void givenValidateAndFormatHour_whenHourIsValid_thenReturnTheHourInStringParsedToLocalTime() {
+
+            final String hourInString = "09:59";
+            final LocalTime expected = LocalTime.of(9, 59);
+
+            final LocalTime actual = service.validateAndFormatHour(hourInString);
 
             assertNotNull(actual);
             assertEquals(expected, actual);

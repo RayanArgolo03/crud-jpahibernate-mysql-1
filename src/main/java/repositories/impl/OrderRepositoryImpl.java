@@ -9,6 +9,7 @@ import repositories.interfaces.OrderRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -48,6 +49,20 @@ public final class OrderRepositoryImpl implements OrderRepository {
                         """, Order.class)
                 .setParameter("client", client)
                 .setParameter("orderDate", orderDate)
+                .getResultList());
+    }
+
+    @Override
+    public Set<Order> findByExactlyHour(final Client client, final LocalTime hour) {
+
+        return new HashSet<>(transactionManager.getEntityManager()
+                .createQuery("""
+                        SELECT o
+                        FROM Order o
+                        WHERE o.client = :client AND TIME(o.createdAt) = :hour
+                        """, Order.class)
+                .setParameter("client", client)
+                .setParameter("hour", hour)
                 .getResultList());
     }
 

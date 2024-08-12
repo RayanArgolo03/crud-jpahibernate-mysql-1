@@ -22,8 +22,8 @@ import java.util.UUID;
 @Table(name = "order_items")
 public final class OrderItem {
 
-    @Id
     @GeneratedValue
+    @Id
     @Column(name = "order_item_id")
     UUID id;
 

@@ -6,6 +6,7 @@ import model.order.Order;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 public interface OrderRepository {
@@ -13,6 +14,7 @@ public interface OrderRepository {
     Set<Order> findAll(Client client);
 
     Set<Order> findByOrderDate(Client client, LocalDate orderDate);
+    Set<Order> findByExactlyHour(Client client, LocalTime hour);
 
     Set<Order> findByTotalPrice(Client client, BigDecimal total);
 

@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 import java.util.Objects;
@@ -57,6 +58,11 @@ public final class OrderService {
                 yield repository.findByOrderDate(client, this.validateAndFormatDate(dateInString));
             }
 
+            case EXACTLY_HOUR -> {
+                final String hourInString = readSimpleString("exactly hour (pattern hh:mm with two points!)");
+                yield repository.findByExactlyHour(client, this.validateAndFormatHour(hourInString));
+            }
+
             case TOTAL_PRICE -> {
                 final String totalPriceInString = readSimpleString("price (with comma, dot and max three decimal places)");
                 yield repository.findByTotalPrice(client, this.validateAndFormatTotalPrice(totalPriceInString));
@@ -87,6 +93,20 @@ public final class OrderService {
 
         } catch (DateTimeException e) {
             throw new OrderException(format("%s is invalid date!", dateInString));
+        }
+    }
+
+    public LocalTime validateAndFormatHour(final String hourInString) {
+
+        Objects.requireNonNull(hourInString, "Hour can´t be null!");
+
+        try {
+            return LocalTime.parse(hourInString, DateTimeFormatter.ofPattern("HH:mm")
+                    .withResolverStyle(ResolverStyle.STRICT)
+            );
+
+        } catch (DateTimeException e) {
+            throw new OrderException(format("%s is invalid hour!", hourInString));
         }
     }
 
