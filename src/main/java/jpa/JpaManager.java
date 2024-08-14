@@ -4,6 +4,7 @@ import exceptions.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -15,13 +16,16 @@ import java.util.function.Consumer;
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Log4j2
-public final class JpaTransactionManager {
+public final class JpaManager {
 
     EntityManager entityManager;
+    CriteriaBuilder builder;
 
-    public JpaTransactionManager(String unitPersitence) {
+    public JpaManager(String unitPersitence) {
         this.entityManager = Persistence.createEntityManagerFactory(unitPersitence)
                 .createEntityManager();
+
+        builder = entityManager.getCriteriaBuilder();
     }
 
     public void executeAction(final Consumer<EntityManager> action) {
@@ -35,7 +39,11 @@ public final class JpaTransactionManager {
         }
         catch (Exception e) {
             if (Objects.nonNull(transaction)) {
-                try {transaction.rollback();} catch (Exception ee){log.error(ee.getMessage());}
+                try {
+                    transaction.rollback();
+                } catch (Exception ee) {
+                    log.error(ee.getMessage());
+                }
             }
             throw new DatabaseException(e.getCause().getMessage(), e);
         }
@@ -45,6 +53,9 @@ public final class JpaTransactionManager {
 
     }
 
-    public void clearContextPersistence() {entityManager.clear();}
+    public void clearContextPersistence() {
+        entityManager.clear();
+    }
+
 
 }

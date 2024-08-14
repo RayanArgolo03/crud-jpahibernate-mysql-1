@@ -1,7 +1,8 @@
 package repositories.impl;
 
 import enums.Category;
-import jpa.JpaTransactionManager;
+import jakarta.persistence.criteria.*;
+import jpa.JpaManager;
 import lombok.AllArgsConstructor;
 import model.client.Client;
 import model.order.Order;
@@ -16,13 +17,13 @@ import java.util.Set;
 @AllArgsConstructor
 public final class OrderRepositoryImpl implements OrderRepository {
 
-    JpaTransactionManager transactionManager;
+    JpaManager jpaManager;
 
     @Override
     public Set<Order> findAll(final Client client) {
 
         final LinkedHashSet<Order> orders = new LinkedHashSet<>(
-                transactionManager.getEntityManager()
+                jpaManager.getEntityManager()
                         .createQuery("""
                                 SELECT o
                                 FROM Order o
@@ -33,28 +34,40 @@ public final class OrderRepositoryImpl implements OrderRepository {
                         .getResultList()
         );
 
-        transactionManager.clearContextPersistence();
+        jpaManager.clearContextPersistence();
         return orders;
     }
 
     @Override
+    public Set<Order> findAllByParamsUsingCriteria(Client client) {
+        return null;
+    }
+
+
+    //Todo continue aqui
+    @Override
     public Set<Order> findByOrderDate(final Client client, final LocalDate orderDate) {
 
-        return new HashSet<>(transactionManager.getEntityManager()
-                .createQuery("""
-                        SELECT o
-                        FROM Order o
-                        WHERE o.client = :client AND DATE(o.createdAt) = :orderDate
-                        """, Order.class)
-                .setParameter("client", client)
-                .setParameter("orderDate", orderDate)
+        final CriteriaBuilder builder = jpaManager.getBuilder();
+        final CriteriaQuery<Order> query = builder.createQuery(Order.class);
+        final Root<Order> root = query.from(Order.class);
+
+        final Expression<LocalDate> createdDateInLocalDateFormat = builder.function("date", LocalDate.class, root.get("createdAt"));
+
+        final Predicate[] predicates = new Predicate[]{
+                builder.equal(root.get("client"), client),
+                builder.equal(createdDateInLocalDateFormat, orderDate)
+        };
+
+        return new HashSet<>(jpaManager.getEntityManager()
+                .createQuery(query.where(predicates))
                 .getResultList());
     }
 
     @Override
     public Set<Order> findByTotalPrice(final Client client, final BigDecimal total) {
 
-        return new HashSet<>(transactionManager.getEntityManager()
+        return new HashSet<>(jpaManager.getEntityManager()
                 .createQuery("""
                         SELECT o FROM Order o
                         JOIN o.orderItems oi
@@ -70,7 +83,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Set<Order> findByCategory(final Client client, final Category category) {
 
-        return new HashSet<>(transactionManager.getEntityManager()
+        return new HashSet<>(jpaManager.getEntityManager()
                 .createQuery("""
                             SELECT o FROM Order o
                             JOIN o.orderItems oi
@@ -85,7 +98,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Set<Order> findByProductName(final Client client, final String productName) {
 
-        return new HashSet<>(transactionManager.getEntityManager()
+        return new HashSet<>(jpaManager.getEntityManager()
                 .createQuery("""
                         SELECT o FROM Order o
                         JOIN o.orderItems oi
@@ -98,11 +111,11 @@ public final class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public void save(final Order order) {
-        transactionManager.executeAction((aux) -> aux.persist(order));
+        jpaManager.executeAction((aux) -> aux.persist(order));
     }
 
     @Override
     public void delete(final Set<Order> orders) {
-        transactionManager.executeAction((aux) -> orders.forEach(aux::remove));
+        jpaManager.executeAction((aux) -> orders.forEach(aux::remove));
     }
 }

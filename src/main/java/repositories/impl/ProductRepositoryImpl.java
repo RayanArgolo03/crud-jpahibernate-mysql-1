@@ -1,6 +1,6 @@
 package repositories.impl;
 
-import jpa.JpaTransactionManager;
+import jpa.JpaManager;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,7 +15,7 @@ import java.util.TreeSet;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class ProductRepositoryImpl implements ProductRepository {
 
-    JpaTransactionManager transactionManager;
+    JpaManager jpaManager;
 
     @Override
     public Set<Product> findAll() {
@@ -24,18 +24,18 @@ public final class ProductRepositoryImpl implements ProductRepository {
         final Set<Product> products = new TreeSet<>(Comparator.comparing(Product::getName));
 
         products.addAll(
-                transactionManager.getEntityManager()
+                jpaManager.getEntityManager()
                         .createQuery("SELECT p FROM Product p", Product.class)
                         .getResultList()
         );
 
-       transactionManager.clearContextPersistence();
+       jpaManager.clearContextPersistence();
         return products;
     }
 
     @Override
     public void saveAll(final Set<Product> products) {
-        transactionManager.executeAction((aux) -> products.forEach(aux::persist));
+        jpaManager.executeAction((aux) -> products.forEach(aux::persist));
     }
 
 }

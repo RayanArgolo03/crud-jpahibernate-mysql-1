@@ -11,6 +11,7 @@ import java.util.Set;
 public interface OrderRepository {
 
     Set<Order> findAll(Client client);
+    Set<Order> findAllByParamsUsingCriteria(Client client);
 
     Set<Order> findByOrderDate(Client client, LocalDate orderDate);
 

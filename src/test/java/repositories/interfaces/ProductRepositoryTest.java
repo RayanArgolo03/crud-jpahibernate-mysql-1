@@ -1,7 +1,7 @@
 package repositories.interfaces;
 
 import enums.Category;
-import jpa.JpaTransactionManager;
+import jpa.JpaManager;
 import lombok.extern.log4j.Log4j2;
 import model.order.Product;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ class ProductRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        repository = new ProductRepositoryImpl(new JpaTransactionManager("h2"));
+        repository = new ProductRepositoryImpl(new JpaManager("h2"));
 
         productsExpected = new TreeSet<>(Comparator.comparing(Product::getName));
         productsExpected.addAll(Set.of(

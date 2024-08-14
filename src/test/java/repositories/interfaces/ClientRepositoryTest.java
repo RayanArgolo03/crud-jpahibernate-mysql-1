@@ -1,6 +1,6 @@
 package repositories.interfaces;
 
-import jpa.JpaTransactionManager;
+import jpa.JpaManager;
 import model.client.Client;
 import org.junit.jupiter.api.*;
 import repositories.impl.ClientRepositoryImpl;
@@ -16,7 +16,7 @@ class ClientRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        repository = new ClientRepositoryImpl(new JpaTransactionManager("h2"));
+        repository = new ClientRepositoryImpl(new JpaManager("h2"));
         client = Client.builder()
                 .name("abcd")
                 .username("abcd")

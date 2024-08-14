@@ -6,7 +6,7 @@ import controllers.ProductController;
 import enums.ClientOption;
 import enums.MenuOption;
 import exceptions.ProductException;
-import jpa.JpaTransactionManager;
+import jpa.JpaManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,7 +31,7 @@ import static utils.ReaderUtils.readEnum;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class Main {
-    static JpaTransactionManager TRANSACTION_MANAGER;
+    static JpaManager JPA_MANAGER;
     static ClientController CLIENT_CONTROLLER;
     static OrderController ORDER_CONTROLLER;
     static ProductController PRODUCT_CONTROLLER;
@@ -40,18 +40,18 @@ public final class Main {
 
         System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
 
-        TRANSACTION_MANAGER = new JpaTransactionManager("h2");
+        JPA_MANAGER = new JpaManager("h2");
 
         CLIENT_CONTROLLER = new ClientController(
-                new ClientService(new ClientRepositoryImpl(TRANSACTION_MANAGER), ClientMapper.INSTANCE)
+                new ClientService(new ClientRepositoryImpl(JPA_MANAGER), ClientMapper.INSTANCE)
         );
 
         ORDER_CONTROLLER = new OrderController(
-                new OrderService(new OrderRepositoryImpl(TRANSACTION_MANAGER), OrderMapper.INSTANCE)
+                new OrderService(new OrderRepositoryImpl(JPA_MANAGER), OrderMapper.INSTANCE)
         );
 
         PRODUCT_CONTROLLER = new ProductController(
-                new ProductService(new ProductRepositoryImpl(TRANSACTION_MANAGER))
+                new ProductService(new ProductRepositoryImpl(JPA_MANAGER))
         );
     }
 

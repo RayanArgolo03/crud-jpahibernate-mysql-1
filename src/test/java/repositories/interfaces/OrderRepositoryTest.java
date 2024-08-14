@@ -1,7 +1,7 @@
 package repositories.interfaces;
 
 import enums.Category;
-import jpa.JpaTransactionManager;
+import jpa.JpaManager;
 import model.client.Client;
 import model.order.Order;
 import model.order.OrderItem;
@@ -24,14 +24,14 @@ class OrderRepositoryTest {
 
     private OrderRepository repository;
     private Client client;
-    private JpaTransactionManager manager;
+    private JpaManager manager;
     private Product product;
     private Order order;
 
 
     @BeforeEach
     void setUp() {
-        manager = new JpaTransactionManager("h2");
+        manager = new JpaManager("h2");
         repository = new OrderRepositoryImpl(manager);
 
         client = Client.builder().name("abcd").username("abcd").password("abcd").cpf("12112122192")
@@ -90,9 +90,15 @@ class OrderRepositoryTest {
             orderDate = LocalDate.now();
         }
 
+        //Todo teste aqui
         @Test
-        void givenFindByOrderDate_whenOrdersNotFound_thenReturnEmptySet() {
-            assertEquals(Collections.EMPTY_SET, repository.findByOrderDate(client, orderDate));
+        void givenFindByOrderDate_whenOrdersFound_thenReturnSetOfOrders() {
+
+            repository.save(order);
+
+            Set<Order> byOrderDate = repository.findByOrderDate(client, LocalDate.of(2024, 8, 14));
+            assertEquals(1, byOrderDate.size());
+
         }
 
 
@@ -116,6 +122,8 @@ class OrderRepositoryTest {
 
         @Test
         void givenFindByTotalPrice_whenOrdersFound_thenReturnSetOfOrders() {
+
+            repository.findByTotalPrice(client, total);
 
             repository.save(order);
 

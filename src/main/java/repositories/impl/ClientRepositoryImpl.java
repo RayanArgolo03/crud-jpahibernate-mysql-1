@@ -1,6 +1,6 @@
 package repositories.impl;
 
-import jpa.JpaTransactionManager;
+import jpa.JpaManager;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,25 +13,25 @@ import java.util.Optional;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class ClientRepositoryImpl implements ClientRepository {
 
-    JpaTransactionManager transactionManager;
+    JpaManager jpaManager;
 
     @Override
     public Optional<String> findUsername(final String username) {
 
-        final Optional<String> optionalUsername = transactionManager.getEntityManager()
+        final Optional<String> optionalUsername = jpaManager.getEntityManager()
                 .createQuery("SELECT c.username FROM Client c WHERE c.username = :username", String.class)
                 .setParameter("username", username)
                 .getResultStream()
                 .findFirst();
 
-        transactionManager.clearContextPersistence();
+        jpaManager.clearContextPersistence();
         return optionalUsername;
     }
 
     @Override
     public Optional<Client> findClient(final String username, final String password) {
 
-        final Optional<Client> optionalClient = transactionManager.getEntityManager()
+        final Optional<Client> optionalClient = jpaManager.getEntityManager()
                 .createQuery("""
                         SELECT c
                         FROM Client c
@@ -43,12 +43,12 @@ public final class ClientRepositoryImpl implements ClientRepository {
                 .getResultStream()
                 .findFirst();
 
-        transactionManager.clearContextPersistence();
+        jpaManager.clearContextPersistence();
         return optionalClient;
     }
 
     @Override
     public void save(final Client client) {
-        transactionManager.executeAction((aux) -> aux.persist(client));
+        jpaManager.executeAction((aux) -> aux.persist(client));
     }
 }
