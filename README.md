@@ -8,7 +8,6 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - SQL 
 - JPA
 - JPQL 
-- Criteria 🛠
 ## Banco de Dados
 - MariaDB 
 - H2 Database para testes integrados
@@ -16,6 +15,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Lombok
 - Mapstruct
 - Hibernate️
+- Criteria API
 # Testes
 - Junit5
 - Parameterised Tests
