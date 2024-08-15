@@ -36,8 +36,9 @@ public final class JpaManager {
             transaction.begin();
             action.accept(entityManager);
             transaction.commit();
-        }
-        catch (Exception e) {
+
+        } catch (Exception e) {
+
             if (Objects.nonNull(transaction)) {
                 try {
                     transaction.rollback();
@@ -45,9 +46,10 @@ public final class JpaManager {
                     log.error(ee.getMessage());
                 }
             }
+
             throw new DatabaseException(e.getCause().getMessage(), e);
-        }
-        finally {
+
+        } finally {
             clearContextPersistence();
         }
 

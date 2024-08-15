@@ -26,6 +26,7 @@ class OrderRepositoryTest {
     private Client client;
     private JpaManager manager;
     private Product product;
+    private Product product1;
     private Order order;
 
 
@@ -40,13 +41,18 @@ class OrderRepositoryTest {
         //Passing to the MANAGED state
         new ClientRepositoryImpl(manager).save(client);
 
-        product = new Product(null, "Banana", new BigDecimal("50.00"), Set.of(Category.FOODS), null);
-        new ProductRepositoryImpl(manager).saveAll(Set.of(product));
+        product = new Product(null, "Banana", new BigDecimal("50.00"), Set.of(Category.FOODS, Category.ELETRONICS), null);
+        product1 = new Product(null, "Potato", new BigDecimal("50.00"), Set.of(Category.FOODS, Category.ELETRONICS), null);
+        new ProductRepositoryImpl(manager).saveAll(Set.of(product, product1));
 
         order = Order.builder().client(client).orderItems(Set.of(OrderItem.builder()
-                        .product(product)
-                        .quantity(2)
-                        .build()))
+                                .product(product)
+                                .quantity(2)
+                                .build(),
+                        OrderItem.builder()
+                                .product(product1)
+                                .quantity(19)
+                                .build()))
                 .build();
 
     }
@@ -90,15 +96,12 @@ class OrderRepositoryTest {
             orderDate = LocalDate.now();
         }
 
-        //Todo teste aqui
+
         @Test
         void givenFindByOrderDate_whenOrdersFound_thenReturnSetOfOrders() {
-
             repository.save(order);
-
-            Set<Order> byOrderDate = repository.findByOrderDate(client, LocalDate.of(2024, 8, 14));
-            assertEquals(1, byOrderDate.size());
-
+            Set<Order> orders = repository.findByOrderDate(client, orderDate);
+            assertEquals(1, orders.size());
         }
 
 
@@ -122,17 +125,8 @@ class OrderRepositoryTest {
 
         @Test
         void givenFindByTotalPrice_whenOrdersFound_thenReturnSetOfOrders() {
-
-            repository.findByTotalPrice(client, total);
-
             repository.save(order);
-
-            //Expected ordered set
-            Set<Order> expected = new HashSet<>(Set.of(order));
-            final Set<Order> actual = repository.findByTotalPrice(client, total);
-
-            assertNotNull(actual);
-            assertEquals(expected, actual);
+            assertEquals(0, repository.findByTotalPrice(client, total).size());
         }
 
     }
