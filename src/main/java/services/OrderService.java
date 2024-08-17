@@ -66,8 +66,7 @@ public final class OrderService {
 
             case PRODUCT_NAME -> {
                 final String productName = readSimpleString("product name (no special symbols, at least 3 characters!)");
-                validateProductName(productName);
-                yield repository.findByProductName(client, productName);
+                yield repository.findByProductName(client, this.validateAndFormatProductName(productName));
             }
         };
 
@@ -101,7 +100,7 @@ public final class OrderService {
         }
     }
 
-    public void validateProductName(final String productName) {
+    public String validateAndFormatProductName(final String productName) {
 
         Objects.requireNonNull(productName, "Name can´t be null!");
 
@@ -110,6 +109,8 @@ public final class OrderService {
 
         if (!productName.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+$"))
             throw new OrderException(format("%s contains special symbol or white space", productName));
+
+        return productName.toLowerCase();
 
     }
 

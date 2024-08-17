@@ -245,9 +245,9 @@ class OrderServiceTest {
             @Test
             void givenFindByOption_whenOptionIsProductNameAndOrdersNotFoundByProductName_thenThrowOrdersException() {
 
-                final String productName = "Tomato";
+                final String productName = "tomato";
 
-                when(repository.findByProductName(client, "Tomato")).thenReturn(Set.of());
+                when(repository.findByProductName(client, productName)).thenReturn(Set.of());
 
                 SystemStubs.withTextFromSystemIn(productName).execute(() -> {
                     final OrderException e = assertThrows(OrderException.class,
@@ -265,8 +265,7 @@ class OrderServiceTest {
             @SneakyThrows
             void givenFindByOption_whenOptionIsProductNameAndAndOrdersHasBeenFoundByProductName_thenReturnSetOfOrders() {
 
-                final String productName = "OnionRigs";
-
+                final String productName = "onion";
 
                 when(repository.findByProductName(client, productName)).thenReturn(Set.of(order));
 
@@ -374,14 +373,14 @@ class OrderServiceTest {
 
 
     @Nested
-    @DisplayName("** ValidateProductName order tests **")
-    class ValidateProductNameTests {
+    @DisplayName("** ValidateAndFormatProductName order tests **")
+    class ValidateAndFormatProductNameTests {
 
         @Test
-        void givenValidateProductName_whenProductNameIsNull_thenThrowNullPointerException() {
+        void givenValidateAndFormatProductName_whenProductNameIsNull_thenThrowNullPointerException() {
 
             final NullPointerException e = assertThrows(NullPointerException.class,
-                    () -> service.validateProductName(null));
+                    () -> service.validateAndFormatProductName(null));
 
             final String expected = "Name can´t be null!";
             assertEquals(expected, e.getMessage());
@@ -395,7 +394,7 @@ class OrderServiceTest {
             final String productName = "ab";
 
             final OrderException e = assertThrows(OrderException.class,
-                    () -> service.validateProductName(productName));
+                    () -> service.validateAndFormatProductName(productName));
 
             final String expected = format("%s is a short name (less than three characters)", productName);
             assertEquals(expected, e.getMessage());
@@ -409,7 +408,7 @@ class OrderServiceTest {
         void givenValidateProductName_whenNameContainsSpecialSymbol_thenThrowOrderException(final String productName) {
 
             final OrderException e = assertThrows(OrderException.class,
-                    () -> service.validateProductName(productName));
+                    () -> service.validateAndFormatProductName(productName));
 
             final String expected = format("%s contains special symbol or white space", productName);
             assertEquals(expected, e.getMessage());
@@ -417,9 +416,13 @@ class OrderServiceTest {
         }
 
         @Test
-        void givenValidateProductName_whenNameIsValid_thenDoesNotThrowOrderException() {
-            final String productName = "Strawberry";
-            assertDoesNotThrow(() -> service.validateProductName(productName));
+        void givenValidateProductName_whenNameIsValid_thenReturnNameInLowerCase() {
+
+            final String productName = "pOTTatOo";
+
+            final String actual = service.validateAndFormatProductName(productName);
+
+            assertEquals(productName.toLowerCase(), actual);
         }
 
     }

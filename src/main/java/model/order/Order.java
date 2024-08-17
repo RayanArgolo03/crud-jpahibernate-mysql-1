@@ -31,7 +31,7 @@ public final class Order {
     @GeneratedValue
     UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_client")
     Client client;
 
