@@ -1,9 +1,11 @@
 package services;
 
+import criteria.OrderFilterParam;
 import dtos.output.OrderOutputDTO;
 import enums.Category;
 import enums.ContinueOption;
-import enums.FindOrderOption;
+import enums.FilterOrderOption;
+import enums.FindAllOption;
 import exceptions.DatabaseException;
 import exceptions.OrderException;
 import lombok.SneakyThrows;
@@ -31,7 +33,10 @@ import utils.GetMockProductsUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
@@ -81,13 +86,20 @@ class OrderServiceTest {
         @DisplayName("** FindAllOrders tests **")
         class FindAllOrdersTest {
 
+            private FindAllOption option;
+
+            @BeforeEach
+            void setUp() {
+                option = FindAllOption.FIND_ALL;
+            }
+
             @Test
             void givenFindAllOrders_whenOrdersNotFound_thenThrowOrderException() {
 
                 when(repository.findAll(client)).thenReturn(Set.of());
 
                 final OrderException e = assertThrows(OrderException.class,
-                        () -> service.findAllOrders(client));
+                        () -> service.findAll(client, option));
 
                 final String expected = format("Orders of client %s not found!", client.getName());
                 assertEquals(expected, e.getMessage());
@@ -110,7 +122,7 @@ class OrderServiceTest {
                 when(repository.findAll(client)).thenReturn(Set.of(order));
                 when(mapper.orderToOutput(order)).thenReturn(expected);
 
-                final List<OrderOutputDTO> orders = new ArrayList<>(service.findAllOrders(client));
+                final List<OrderOutputDTO> orders = new ArrayList<>(service.findAll(client, option));
 
                 assertNotNull(orders);
                 assertFalse(orders.isEmpty());
@@ -127,12 +139,12 @@ class OrderServiceTest {
         @DisplayName("** FindByOrderDate order tests with System.Lambda library **")
         class FindByOrderDateTests {
 
-            private FindOrderOption option;
+            private FilterOrderOption option;
             private String dateInString;
 
             @BeforeEach
             void setUp() {
-                option = FindOrderOption.ORDER_DATE;
+                option = FilterOrderOption.ORDER_DATE;
                 dateInString = "10/10/2010";
             }
 
@@ -180,12 +192,12 @@ class OrderServiceTest {
         @DisplayName("** FindByTotalPrice order tests with System.Lambda library **")
         class FindByTotalPriceTests {
 
-            private FindOrderOption option;
+            private FilterOrderOption option;
             private String totalPrice;
 
             @BeforeEach
             void setUp() {
-                option = FindOrderOption.TOTAL_PRICE;
+                option = FilterOrderOption.TOTAL_PRICE;
                 totalPrice = "10.50";
             }
 
@@ -232,12 +244,12 @@ class OrderServiceTest {
         @DisplayName("** FindByProductName order tests with System.Lambda library **")
         class FindByProductNameTests {
 
-            private FindOrderOption option;
+            private FilterOrderOption option;
 
 
             @BeforeEach
             void setUp() {
-                option = FindOrderOption.PRODUCT_NAME;
+                option = FilterOrderOption.PRODUCT_NAME;
             }
 
 
@@ -282,6 +294,94 @@ class OrderServiceTest {
 
         }
 
+    }
+
+    @Nested
+    @DisplayName("SetFilterParamTests with SystemStubs")
+    class SetFilterParamTests {
+
+        private OrderFilterParam orderFilterParam;
+
+        @BeforeEach
+        void setUp() {
+            orderFilterParam = new OrderFilterParam();
+        }
+
+        @SneakyThrows
+        @Test
+        void givenSetFilterParam_whenFilterOptionIsOrderDateAndHasBeenOrderDate_thenReplacingTheOrderDate() {
+
+            final FilterOrderOption filterOption = FilterOrderOption.ORDER_DATE;
+            final LocalDate expected = LocalDate.of(2024, 8, 2);
+
+            orderFilterParam.setOrderDate(LocalDate.now());
+            assertNotNull(orderFilterParam.getOrderDate());
+
+            SystemStubs.withTextFromSystemIn("02/08/2024")
+                    .execute(() -> {
+                        service.setFilterParam(filterOption, orderFilterParam);
+
+                        assertNotNull(orderFilterParam.getOrderDate());
+                        assertEquals(expected, orderFilterParam.getOrderDate());
+                    });
+        }
+
+        @SneakyThrows
+        @Test
+        void givenSetFilterParam_whenFilterOptionIsTotalPriceAndHasBeenTotalPrice_thenReplacingTheTotalPrice() {
+
+            final FilterOrderOption filterOption = FilterOrderOption.TOTAL_PRICE;
+            final BigDecimal expected = new BigDecimal("1200");
+
+            orderFilterParam.setTotalPrice(new BigDecimal("1000"));
+            assertNotNull(orderFilterParam.getTotalPrice());
+
+            SystemStubs.withTextFromSystemIn("1200")
+                    .execute(() -> {
+                        service.setFilterParam(filterOption, orderFilterParam);
+
+                        assertNotNull(orderFilterParam.getTotalPrice());
+                        assertEquals(expected, orderFilterParam.getTotalPrice());
+                    });
+        }
+
+//        @SneakyThrows
+//        @Test
+//        void givenSetFilterParam_whenFilterOptionIsCategoryAndHasBeenCategory_thenReplacingTheCategory() {
+//
+//            final FilterOrderOption filterOption = FilterOrderOption.CATEGORY;
+//            final Category expected = Category.FOODS;
+//
+//            orderFilterParam.setCategory(Category.ELETRONICS);
+//            assertNotNull(orderFilterParam.getCategory());
+//
+//            SystemStubs.withTextFromSystemIn(String.valueOf(expected.ordinal()))
+//                    .execute(() -> {
+//                        service.setFilterParam(filterOption, orderFilterParam);
+//
+//                        assertNotNull(orderFilterParam.getCategory());
+//                        assertEquals(expected, orderFilterParam.getCategory());
+//                    });
+//        }
+
+        @SneakyThrows
+        @Test
+        void givenSetFilterParam_whenFilterOptionIsProductNameAndHasBeenProductName_thenReplacingTheProductName() {
+
+            final FilterOrderOption filterOption = FilterOrderOption.PRODUCT_NAME;
+            final String expected = "Banana".toLowerCase();
+
+            orderFilterParam.setProductName("Pickles");
+            assertNotNull(orderFilterParam.getProductName());
+
+            SystemStubs.withTextFromSystemIn(expected)
+                    .execute(() -> {
+                        service.setFilterParam(filterOption, orderFilterParam);
+
+                        assertNotNull(orderFilterParam.getProductName());
+                        assertEquals(expected, orderFilterParam.getProductName());
+                    });
+        }
     }
 
     @Nested

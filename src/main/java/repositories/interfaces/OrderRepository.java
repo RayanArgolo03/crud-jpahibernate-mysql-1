@@ -1,5 +1,6 @@
 package repositories.interfaces;
 
+import criteria.OrderFilterParam;
 import enums.Category;
 import model.client.Client;
 import model.order.Order;
@@ -11,7 +12,8 @@ import java.util.Set;
 public interface OrderRepository {
 
     Set<Order> findAll(Client client);
-    Set<Order> findAllByParamsUsingCriteria(Client client);
+
+    Set<Order> findAllByParams(Client client, OrderFilterParam params);
 
     Set<Order> findByOrderDate(Client client, LocalDate orderDate);
 

@@ -1,9 +1,11 @@
 package services;
 
+import criteria.OrderFilterParam;
 import dtos.output.OrderOutputDTO;
 import enums.Category;
 import enums.ContinueOption;
-import enums.FindOrderOption;
+import enums.FilterOrderOption;
+import enums.FindAllOption;
 import exceptions.DatabaseException;
 import exceptions.OrderException;
 import lombok.AccessLevel;
@@ -15,13 +17,12 @@ import model.order.Order;
 import model.order.OrderItem;
 import model.order.Product;
 import repositories.interfaces.OrderRepository;
+import utils.FormatterUtils;
 
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.ResolverStyle;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,9 +38,23 @@ public final class OrderService {
     OrderMapper mapper;
 
 
-    public Set<OrderOutputDTO> findAllOrders(final Client client) {
+    public Set<OrderOutputDTO> findAll(final Client client, final FindAllOption option) {
 
-        final Set<Order> orders = repository.findAll(client);
+        final Set<Order> orders = switch (option) {
+            case FIND_ALL -> repository.findAll(client);
+
+            case FIND_ALL_BY_PARAMS -> {
+                final OrderFilterParam orderFilterParam = this.createOrderFilterParam();
+
+                if (Objects.isNull(orderFilterParam)) {
+                    System.out.println("Without params! Finding all orders normally..");
+                    yield repository.findAll(client);
+                }
+
+                yield repository.findAllByParams(client, orderFilterParam);
+            }
+        };
+
         if (orders.isEmpty()) throw new OrderException(format("Orders of client %s not found!", client.getName()));
 
         return orders.stream()
@@ -47,27 +62,105 @@ public final class OrderService {
                 .collect(Collectors.toSet());
     }
 
+    public OrderFilterParam createOrderFilterParam() {
 
-    public Set<Order> findByOption(final Client client, final FindOrderOption option) {
+        final OrderFilterParam filterParams = new OrderFilterParam();
 
-        final Set<Order> orders = switch (option) {
+        ContinueOption continueOption;
+        do {
+
+            System.out.println("Enter with parameter option");
+            FilterOrderOption filterOption = readEnum(FilterOrderOption.class);
+            this.setFilterParam(filterOption, filterParams);
+
+            System.out.println("Do continue passing params?");
+            continueOption = readEnum(ContinueOption.class);
+
+            if (continueOption == ContinueOption.CANCELLING) return null;
+
+        } while (continueOption != ContinueOption.NO);
+
+        return filterParams;
+
+    }
+
+    public void setFilterParam(final FilterOrderOption filterOption, final OrderFilterParam orderFilterParam) {
+
+        switch (filterOption) {
 
             case ORDER_DATE -> {
-                final String dateInString = readSimpleString("order date (pattern dd/MM/yyyy with separators!)");
-                yield repository.findByOrderDate(client, this.validateAndFormatDate(dateInString));
+                final LocalDate orderDate = this.validateAndFormatDate(
+                        readSimpleString("order date (pattern dd/MM/yyyy with separators!)")
+                );
+
+                if (Objects.nonNull(orderFilterParam.getOrderDate())) {
+                    this.printReplacingFilter("order date", FormatterUtils.formatDate(orderFilterParam.getOrderDate()),
+                            FormatterUtils.formatDate(orderDate));
+                }
+
+                orderFilterParam.setOrderDate(orderDate);
             }
 
             case TOTAL_PRICE -> {
-                final String totalPriceInString = readSimpleString("price (with comma, dot and max three decimal places)");
-                yield repository.findByTotalPrice(client, this.validateAndFormatTotalPrice(totalPriceInString));
+                final BigDecimal totalPrice = this.validateAndFormatTotalPrice(
+                        readSimpleString("price (with comma, dot and max three decimal places)")
+                );
+
+                if (Objects.nonNull(orderFilterParam.getTotalPrice())) {
+                    this.printReplacingFilter("total price", FormatterUtils.formatCurrency(orderFilterParam.getTotalPrice()),
+                            FormatterUtils.formatCurrency(totalPrice));
+                }
+
+                orderFilterParam.setTotalPrice(totalPrice);
             }
+            case CATEGORY -> {
+
+                final Category category = readEnum(Category.class);
+
+                if (Objects.nonNull(orderFilterParam.getCategory())) {
+                    this.printReplacingFilter("category", orderFilterParam.getCategory().getFormattedName(), category.getFormattedName());
+                }
+
+                orderFilterParam.setCategory(category);
+            }
+
+            case PRODUCT_NAME -> {
+
+                final String productName = this.validateAndFormatProductName(
+                        readSimpleString("product name (no special symbols, at least 3 characters!)")
+                );
+
+                if (Objects.nonNull(orderFilterParam.getProductName())) {
+                    this.printReplacingFilter("product name", orderFilterParam.getProductName(), productName);
+                }
+
+                orderFilterParam.setProductName(productName);
+            }
+        }
+    }
+
+    private void printReplacingFilter(final String title, final String old, final String neww) {
+        System.out.printf("Replacing %s filter: %s to %s", title, old, neww);
+    }
+
+    public Set<Order> findByOption(final Client client, final FilterOrderOption option) {
+
+        final Set<Order> orders = switch (option) {
+
+            case ORDER_DATE -> repository.findByOrderDate(client, this.validateAndFormatDate(
+                    readSimpleString("order date (pattern dd/MM/yyyy with separators!)")
+            ));
+
+            case TOTAL_PRICE -> repository.findByTotalPrice(client, this.validateAndFormatTotalPrice(
+                    readSimpleString("price (with comma, dot and max three decimal places)")
+            ));
 
             case CATEGORY -> repository.findByCategory(client, readEnum(Category.class));
 
-            case PRODUCT_NAME -> {
-                final String productName = readSimpleString("product name (no special symbols, at least 3 characters!)");
-                yield repository.findByProductName(client, this.validateAndFormatProductName(productName));
-            }
+            case PRODUCT_NAME -> repository.findByProductName(client, this.validateAndFormatProductName(
+                    readSimpleString("product name (no special symbols, at least 3 characters!)")
+            ));
+
         };
 
         if (orders.isEmpty()) throw new OrderException(format("Orders not found by %s", option));
@@ -80,9 +173,7 @@ public final class OrderService {
         Objects.requireNonNull(dateInString, "Order date can´t be null!");
 
         try {
-            return LocalDate.parse(dateInString, DateTimeFormatter.ofPattern("dd/MM/uuuu")
-                    .withResolverStyle(ResolverStyle.STRICT)
-            );
+            return LocalDate.parse(dateInString,FormatterUtils.getDATE_FORMATTER());
 
         } catch (DateTimeException e) {
             throw new OrderException(format("%s is invalid date!", dateInString));

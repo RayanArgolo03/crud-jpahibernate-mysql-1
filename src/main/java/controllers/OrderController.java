@@ -1,7 +1,8 @@
 package controllers;
 
 import dtos.output.OrderOutputDTO;
-import enums.FindOrderOption;
+import enums.FindAllOption;
+import enums.FilterOrderOption;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,14 +28,17 @@ public final class OrderController {
     public Set<Order> find(final Client client) {
 
         log.info("Receiving find option..");
-        final FindOrderOption option = readEnum(FindOrderOption.class);
+        final FilterOrderOption option = readEnum(FilterOrderOption.class);
 
         return service.findByOption(client, option);
     }
 
     public Set<OrderOutputDTO> findAll(final Client client) {
-        log.info("Finding orders..");
-        return service.findAllOrders(client);
+
+        log.info("Receiving find all option..");
+
+        final FindAllOption option = readEnum(FindAllOption.class);
+        return service.findAll(client, option);
     }
 
     public void create(final Client client, final Set<Product> products) {

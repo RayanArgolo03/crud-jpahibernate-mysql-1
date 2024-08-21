@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import repositories.interfaces.ClientRepository;
+import utils.FormatterUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -388,7 +389,7 @@ class ClientServiceTest {
         void givenMapperToOutput_whenClientHasBeenMappedToOutput_thenReturnClientOutputDTO() {
 
             //Formatter for convert local date time to string date formatted
-            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            final DateTimeFormatter formatter = FormatterUtils.getDATE_FORMATTER();
 
             final Client client = Client.builder()
                     .id(UUID.randomUUID())
@@ -408,7 +409,7 @@ class ClientServiceTest {
             assertNotNull(outputDTO);
             assertEquals(outputDTO.getId(), client.getId());
             assertEquals(outputDTO.getClientUsername(), client.getUsername());
-            assertEquals(outputDTO.getSinceDateFormatted(),client.getCreatedAt().format(formatter));
+            assertEquals(outputDTO.getSinceDateFormatted(), client.getCreatedAt().format(formatter));
 
             verify(mapper).clientToOutput(client);
         }

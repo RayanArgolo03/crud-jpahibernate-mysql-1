@@ -1,5 +1,6 @@
 package repositories.interfaces;
 
+import criteria.OrderFilterParam;
 import enums.Category;
 import jpa.JpaManager;
 import model.client.Client;
@@ -16,6 +17,8 @@ import repositories.impl.ProductRepositoryImpl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,7 +48,10 @@ class OrderRepositoryTest {
         product1 = new Product(null, "Potato", new BigDecimal("50.00"), Set.of(Category.FOODS, Category.ELETRONICS), null);
         new ProductRepositoryImpl(manager).saveAll(Set.of(product, product1));
 
-        order = Order.builder().client(client).orderItems(Set.of(OrderItem.builder()
+        order = Order.builder()
+                .client(client)
+                .createdAt(LocalDateTime.of(LocalDate.of(2010, 10, 10), LocalTime.now()))
+                .orderItems(Set.of(OrderItem.builder()
                                 .product(product)
                                 .quantity(2)
                                 .build(),
@@ -85,6 +91,57 @@ class OrderRepositoryTest {
 
     }
 
+
+    @Nested
+    @DisplayName("** FindAllByParams tests **")
+    class FindAllByParamsTests {
+
+        private OrderFilterParam orderFilterParam;
+
+        @BeforeEach
+        void setUp() {
+            repository.save(order);
+            orderFilterParam = new OrderFilterParam();
+        }
+
+        @Test
+        void givenFindAllByParams_whenOrderDateIsNotNull_thenFindWithOrderDate() {
+            orderFilterParam.setOrderDate(order.getCreatedAt().toLocalDate());
+            assertEquals(1, repository.findAllByParams(client, orderFilterParam).size());
+        }
+
+        @Test
+        void givenFindAllByParams_whenTotalPriceIsNotNull_thenFindWithTotalPrice() {
+            orderFilterParam.setTotalPrice(new BigDecimal("1"));
+            assertEquals(1, repository.findAllByParams(client, orderFilterParam).size());
+        }
+
+        @Test
+        void givenFindAllByParams_whenProductNameIsNotNull_thenFindWithProductName() {
+            orderFilterParam.setProductName(product.getName());
+            assertEquals(1, repository.findAllByParams(client, orderFilterParam).size());
+        }
+
+        @Test
+        void givenFindAllByParams_whenCategoryIsNotNull_thenFindWithCategory() {
+            orderFilterParam.setCategory(new ArrayList<>(product.getCategories()).get(0));
+            assertEquals(1, repository.findAllByParams(client, orderFilterParam).size());
+        }
+
+        @Test
+        void givenFindAllByParams_whenAllParamsIsNotNull_thenFindAllByParams() {
+
+            orderFilterParam.setCategory(new ArrayList<>(product.getCategories()).get(0));
+            orderFilterParam.setProductName(product.getName());
+            orderFilterParam.setTotalPrice(new BigDecimal("1"));
+            orderFilterParam.setOrderDate(order.getCreatedAt().toLocalDate());
+
+
+            assertEquals(1, repository.findAllByParams(client, orderFilterParam).size());
+        }
+
+    }
+
     @Nested
     @DisplayName("** FindByOrderDate tests **")
     class FindByOrderDateTests {
@@ -93,13 +150,13 @@ class OrderRepositoryTest {
 
         @BeforeEach
         void setUp() {
+            repository.save(order);
             orderDate = LocalDate.now();
         }
 
 
         @Test
         void givenFindByOrderDate_whenOrdersFound_thenReturnSetOfOrders() {
-            repository.save(order);
             Set<Order> orders = repository.findByOrderDate(client, orderDate);
             assertEquals(1, orders.size());
         }
@@ -141,11 +198,11 @@ class OrderRepositoryTest {
         @BeforeEach
         void setUp() {
             category = Category.ELETRONICS;
+            repository.save(order);
         }
 
         @Test
         void givenFindByCategory_whenOrdersFound_thenReturnSetOfOrders() {
-            repository.save(order);
             Set<Order> byCategory = repository.findByCategory(client, category);
             for (Order o : byCategory) System.out.println(o.getOrderItems());
             assertFalse(byCategory.isEmpty());

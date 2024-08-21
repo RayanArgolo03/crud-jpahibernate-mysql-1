@@ -10,7 +10,6 @@ import utils.FormatterUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -49,7 +48,7 @@ public final class Order {
     }
 
     public String getFormattedDate() {
-        return createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        return createdAt.format(FormatterUtils.getDATE_FORMATTER());
     }
 
     public String getTotal() {

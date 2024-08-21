@@ -1,5 +1,6 @@
 package repositories.impl;
 
+import criteria.OrderFilterParam;
 import enums.Category;
 import jakarta.persistence.criteria.*;
 import jpa.JpaManager;
@@ -13,8 +14,7 @@ import repositories.interfaces.OrderRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -29,8 +29,8 @@ public final class OrderRepositoryImpl implements OrderRepository {
 
         this.jpaManager = jpaManager;
 
-        //Start Criteria API boilerplate
-        builder = jpaManager.getBuilder();
+        //Init criteria api boilerplate
+        builder = jpaManager.getEntityManager().getCriteriaBuilder();
         query = builder.createQuery(Order.class);
         root = query.from(Order.class);
     }
@@ -46,26 +46,92 @@ public final class OrderRepositoryImpl implements OrderRepository {
         return orders;
     }
 
-    //Todo
     @Override
-    public Set<Order> findAllByParamsUsingCriteria(Client client) {
-        return null;
+    public Set<Order> findAllByParams(final Client client, final OrderFilterParam params) {
+
+        final List<Predicate> predicates = new ArrayList<>(List.of(
+                builder.equal(root.get("client"), client)
+        ));
+
+        if (params.getOrderDate() != null) {
+            final Expression<LocalDate> createdAtToLocalDate = builder.function("date", LocalDate.class, root.get("createdAt"));
+            predicates.add(builder.equal(createdAtToLocalDate, params.getOrderDate()));
+        }
+
+        //To avoid duplicate joins in other conditions
+        Join<Order, OrderItem> orderItemsTable = null;
+        Join<OrderItem, Product> productTable = null;
+
+        if (params.getTotalPrice() != null) {
+
+            orderItemsTable = this.joinOrderItemsTable();
+            productTable = this.joinProductTable(orderItemsTable);
+
+            final Expression<BigDecimal> totalPrice = builder.sum(
+                    builder.prod(productTable.get("unitPrice"), orderItemsTable.get("quantity"))
+            );
+
+            final Expression<String> substringTotalPrice = builder.substring(
+                    totalPrice.as(String.class), 1, 1
+            );
+
+            final Predicate predicate = builder.like(substringTotalPrice, params.getTotalPrice() + "%");
+
+            query.groupBy(root.get("id"))
+                    .having(predicate);
+        }
+
+        if (params.getProductName() != null) {
+
+            if (orderItemsTable == null) {
+                orderItemsTable = this.joinOrderItemsTable();
+                productTable = this.joinProductTable(orderItemsTable);
+            }
+
+            predicates.add(builder.equal(productTable.get("name"), params.getProductName()));
+        }
+
+        if (params.getCategory() != null) {
+
+            if (orderItemsTable == null) {
+                orderItemsTable = this.joinOrderItemsTable();
+                productTable = this.joinProductTable(orderItemsTable);
+            }
+
+            final Join<Product, Category> categoryTable = productTable.join("categories", JoinType.LEFT);
+
+            predicates.add(builder.equal(categoryTable, params.getCategory()));
+        }
+
+        query.where(predicates.toArray(Predicate[]::new));
+
+        return new HashSet<>(jpaManager.getEntityManager()
+                .createQuery(query)
+                .getResultList());
     }
 
+    private Join<Order, OrderItem> joinOrderItemsTable() {
+        return root.join("orderItems", JoinType.LEFT);
+    }
+
+    private Join<OrderItem, Product> joinProductTable(final Join<Order, OrderItem> orderItemsTable) {
+        return orderItemsTable.join("product", JoinType.LEFT);
+    }
 
     @Override
     public Set<Order> findByOrderDate(final Client client, final LocalDate orderDate) {
 
-        final Expression<LocalDate> mappedCreatedAtToDate = builder.function("date", LocalDate.class, root.get("createdAt"));
+        final Expression<LocalDate> createdAtToDate = builder.function("date", LocalDate.class, root.get("createdAt"));
 
-        final Predicate[] predicates = new Predicate[]{
+        final Predicate[] predicates = {
                 builder.equal(root.get("client"), client),
-                builder.equal(mappedCreatedAtToDate, orderDate)
+                builder.equal(createdAtToDate, orderDate)
         };
 
         return new HashSet<>(jpaManager.getEntityManager()
                 .createQuery(query.where(predicates))
                 .getResultList());
+
     }
 
     @Override
@@ -108,10 +174,9 @@ public final class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Set<Order> findByProductName(final Client client, final String productName) {
 
-        final Join<OrderItem, Product> productTable = root.join("orderItems", JoinType.LEFT)
-                .join("product", JoinType.LEFT);
+        final Join<OrderItem, Product> productTable = joinProductTable(root.join("orderItems", JoinType.LEFT));
 
-        final Predicate[] predicates = new Predicate[]{
+        final Predicate[] predicates = {
                 builder.equal(root.get("client"), client),
                 builder.equal(builder.lower(productTable.get("name")), productName)
         };
@@ -119,6 +184,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
         return new HashSet<>(jpaManager.getEntityManager()
                 .createQuery(query.where(predicates))
                 .getResultList());
+
     }
 
     @Override

@@ -4,7 +4,6 @@ import exceptions.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -19,13 +18,10 @@ import java.util.function.Consumer;
 public final class JpaManager {
 
     EntityManager entityManager;
-    CriteriaBuilder builder;
 
     public JpaManager(String unitPersitence) {
         this.entityManager = Persistence.createEntityManagerFactory(unitPersitence)
                 .createEntityManager();
-
-        builder = entityManager.getCriteriaBuilder();
     }
 
     public void executeAction(final Consumer<EntityManager> action) {
