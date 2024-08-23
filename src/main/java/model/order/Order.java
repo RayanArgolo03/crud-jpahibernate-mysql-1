@@ -24,6 +24,28 @@ import java.util.UUID;
 @Entity
 @DynamicInsert
 @Table(name = "orders")
+@NamedQueries({@NamedQuery(name = "Order.findByOrderDate", query = """
+        SELECT o
+        FROM Order o
+        WHERE o.client = :client
+        AND DATE(o.createdAt) = :orderDate
+        """), @NamedQuery(name = "Order.findByTotalPrice", query = """
+        SELECT o
+        FROM Order o
+        JOIN FETCH o.orderItems oi
+        JOIN FETCH oi.product p
+        WHERE o.client = :client
+        GROUP BY o.id, oi.id, p.id
+        HAVING SUBSTRING(CAST(SUM(p.unitPrice * oi.quantity) AS STRING), 1, 1) LIKE :total
+        """), @NamedQuery(name = "Order.findByCategory", query = """
+        SELECT o
+        FROM Order o
+        JOIN FETCH o.orderItems oi
+        JOIN FETCH oi.product p
+        JOIN FETCH p.categories c
+        WHERE o.client = :client
+        AND c = :category
+        """)})
 public final class Order {
 
     @Id

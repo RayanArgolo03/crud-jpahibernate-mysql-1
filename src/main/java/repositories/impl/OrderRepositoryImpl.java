@@ -37,7 +37,6 @@ public final class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Set<Order> findAll(final Client client) {
-
         final Set<Order> orders = new HashSet<>(jpaManager.getEntityManager()
                 .createQuery(query.where(builder.equal(root.get("client"), client)))
                 .getResultList());
@@ -88,7 +87,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
                 productTable = this.joinProductTable(orderItemsTable);
             }
 
-            predicates.add(builder.equal(productTable.get("name"), params.getProductName()));
+            predicates.add(builder.equal(builder.lower(productTable.get("name")), params.getProductName()));
         }
 
         if (params.getCategory() != null) {
@@ -105,9 +104,12 @@ public final class OrderRepositoryImpl implements OrderRepository {
 
         query.where(predicates.toArray(Predicate[]::new));
 
-        return new HashSet<>(jpaManager.getEntityManager()
+        final Set<Order> orders = new HashSet<>(jpaManager.getEntityManager()
                 .createQuery(query)
                 .getResultList());
+
+        jpaManager.clearContextPersistence();
+        return orders;
     }
 
     private Join<Order, OrderItem> joinOrderItemsTable() {
@@ -120,55 +122,29 @@ public final class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Set<Order> findByOrderDate(final Client client, final LocalDate orderDate) {
-
-        final Expression<LocalDate> createdAtToDate = builder.function("date", LocalDate.class, root.get("createdAt"));
-
-        final Predicate[] predicates = {
-                builder.equal(root.get("client"), client),
-                builder.equal(createdAtToDate, orderDate)
-        };
-
         return new HashSet<>(jpaManager.getEntityManager()
-                .createQuery(query.where(predicates))
+                .createNamedQuery("Order.findByOrderDate", Order.class)
+                .setParameter("client", client)
+                .setParameter("orderDate", orderDate)
                 .getResultList());
-
     }
 
     @Override
     public Set<Order> findByTotalPrice(final Client client, final BigDecimal total) {
-
         return new HashSet<>(jpaManager.getEntityManager()
-                .createQuery("""
-                        SELECT o FROM Order o
-                        JOIN  o.orderItems oi
-                        JOIN  oi.product p
-                        WHERE o.client = :client
-                        GROUP BY o
-                        HAVING SUBSTRING( CAST(SUM(p.unitPrice * oi.quantity) AS STRING), 1, 1) LIKE :total
-                         """, Order.class)
+                .createNamedQuery("Order.findByTotalPrice", Order.class)
                 .setParameter("client", client)
                 .setParameter("total", total + "%")
                 .getResultList());
-
     }
 
     @Override
     public Set<Order> findByCategory(final Client client, final Category category) {
-
         return new HashSet<>(jpaManager.getEntityManager()
-                .createQuery("""
-                        SELECT o
-                        FROM Order o
-                        JOIN FETCH o.orderItems oi
-                        JOIN FETCH oi.product p
-                        JOIN FETCH p.categories c
-                        WHERE o.client = :client
-                        AND c = :category
-                        """, Order.class)
+                .createNamedQuery("Order.findByCategory", Order.class)
                 .setParameter("client", client)
                 .setParameter("category", category)
                 .getResultList());
-
     }
 
     @Override

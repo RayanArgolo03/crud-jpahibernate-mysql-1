@@ -103,7 +103,7 @@ public final class OrderService {
 
             case TOTAL_PRICE -> {
                 final BigDecimal totalPrice = this.validateAndFormatTotalPrice(
-                        readSimpleString("price (with comma, dot and max three decimal places)")
+                        readSimpleString("price (with dot and max three decimal places)")
                 );
 
                 if (Objects.nonNull(orderFilterParam.getTotalPrice())) {
@@ -152,7 +152,7 @@ public final class OrderService {
             ));
 
             case TOTAL_PRICE -> repository.findByTotalPrice(client, this.validateAndFormatTotalPrice(
-                    readSimpleString("price (with comma, dot and max three decimal places)")
+                    readSimpleString("price (with dot and max three decimal places)")
             ));
 
             case CATEGORY -> repository.findByCategory(client, readEnum(Category.class));

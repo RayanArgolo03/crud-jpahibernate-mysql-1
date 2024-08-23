@@ -257,11 +257,9 @@ class OrderServiceTest {
             @Test
             void givenFindByOption_whenOptionIsProductNameAndOrdersNotFoundByProductName_thenThrowOrdersException() {
 
-                final String productName = "tomato";
+                when(repository.findByProductName(eq(client), any())).thenReturn(Set.of());
 
-                when(repository.findByProductName(client, productName)).thenReturn(Set.of());
-
-                SystemStubs.withTextFromSystemIn(productName).execute(() -> {
+                SystemStubs.withTextFromSystemIn("tOmaTO").execute(() -> {
                     final OrderException e = assertThrows(OrderException.class,
                             () -> service.findByOption(client, option));
 
@@ -270,18 +268,16 @@ class OrderServiceTest {
                 });
 
 
-                verify(repository).findByProductName(client, productName);
+                verify(repository).findByProductName(eq(client), any());
             }
 
             @Test
             @SneakyThrows
             void givenFindByOption_whenOptionIsProductNameAndAndOrdersHasBeenFoundByProductName_thenReturnSetOfOrders() {
 
-                final String productName = "onion";
+                when(repository.findByProductName(eq(client), any())).thenReturn(Set.of(order));
 
-                when(repository.findByProductName(client, productName)).thenReturn(Set.of(order));
-
-                SystemStubs.withTextFromSystemIn(productName).execute(() -> {
+                SystemStubs.withTextFromSystemIn("OniOn").execute(() -> {
                     final List<Order> orders = new ArrayList<>(service.findByOption(client, option));
 
                     assertNotNull(orders);
@@ -289,7 +285,7 @@ class OrderServiceTest {
                     assertEquals(order, orders.get(0));
                 });
 
-                verify(repository).findByProductName(client, productName);
+                verify(repository).findByProductName(eq(client), any());
             }
 
         }

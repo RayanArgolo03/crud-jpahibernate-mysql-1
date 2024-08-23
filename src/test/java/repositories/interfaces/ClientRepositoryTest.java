@@ -68,7 +68,6 @@ class ClientRepositoryTest {
             assertEquals(Optional.empty(), repository.findClient(username, client.getPassword()));
         }
 
-
     }
 
 }
