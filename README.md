@@ -34,6 +34,7 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 - Repository
 - Singleton no acesso ao banco de dados
 - Utility Classes
+- Filter (CriteriaApi)
 
 ## Organização das classes
 <img src="https://github.com/user-attachments/assets/ee68a04c-4c9b-4d16-ba88-748520d8a0bd"></img>
