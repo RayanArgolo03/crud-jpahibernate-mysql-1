@@ -26,7 +26,7 @@ class ProductRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        repository = new ProductRepositoryImpl(new JpaManager("mariadb"));
+        repository = new ProductRepositoryImpl(new JpaManager("h2"));
 
         productsExpected = new TreeSet<>(Comparator.comparing(Product::getName));
         productsExpected.addAll(Set.of(

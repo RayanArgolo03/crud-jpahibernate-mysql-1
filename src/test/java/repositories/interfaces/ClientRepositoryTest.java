@@ -16,7 +16,7 @@ class ClientRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        repository = new ClientRepositoryImpl(new JpaManager("mariadb"));
+        repository = new ClientRepositoryImpl(new JpaManager("h2"));
         client = Client.builder()
                 .name("abcd")
                 .username("abcd")

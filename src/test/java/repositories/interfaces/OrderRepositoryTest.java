@@ -35,7 +35,7 @@ class OrderRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        manager = new JpaManager("mariadb");
+        manager = new JpaManager("h2");
         repository = new OrderRepositoryImpl(manager);
 
         client = Client.builder().name("abcd").username("abcd").password("abcd").cpf("12112122192")
