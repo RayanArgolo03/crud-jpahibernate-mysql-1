@@ -61,7 +61,8 @@ Este projeto consiste em um crud com JPA e Hibernate. Foi criado para fins de es
 
 ## Workflow do projeto
 
-<img src="https://github.com/user-attachments/assets/41ce0018-838e-4b51-9039-3065ede4fb8f"></img>
+<img src="https://github.com/user-attachments/assets/aad255ce-cf01-4138-b164-b6ddf87f863f"></img>
+
 
 
 ## Contribuição
