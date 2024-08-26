@@ -25,6 +25,6 @@ public interface OrderRepository {
 
     void save(Order order);
 
-    void delete(Set<Order> orders);
+    int deleteAllByParams(Client client,OrderFilterParam params);
 
 }

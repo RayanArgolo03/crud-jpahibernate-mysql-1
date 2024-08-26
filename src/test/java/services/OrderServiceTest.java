@@ -1,11 +1,9 @@
 package services;
 
 import criteria.OrderFilterParam;
-import dtos.output.OrderOutputDTO;
 import enums.Category;
 import enums.ContinueOption;
 import enums.FilterOrderOption;
-import enums.FindAllOption;
 import exceptions.DatabaseException;
 import exceptions.OrderException;
 import lombok.SneakyThrows;
@@ -27,21 +25,17 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import repositories.interfaces.OrderRepository;
 import uk.org.webcompere.systemstubs.SystemStubs;
-import utils.FormatterUtils;
-import utils.GetMockProductsUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,242 +49,6 @@ class OrderServiceTest {
 
     @Spy
     private OrderMapper mapper = OrderMapper.INSTANCE;
-
-
-    @Nested
-    @DisplayName("** Find methods **")
-    class FindTests {
-        private Client client;
-        private Order order;
-
-        @BeforeEach
-        void setUp() {
-
-            client = Client.builder().build();
-
-            //Mocking order
-            OrderItem orderItem = OrderItem.builder()
-                    .product(new ArrayList<>(GetMockProductsUtils.getMockProducts()).get(0))
-                    .quantity(10)
-                    .build();
-
-            order = Order.builder()
-                    .client(client)
-                    .createdAt(LocalDateTime.now())
-                    .orderItems(Set.of(orderItem))
-                    .build();
-        }
-
-
-        @Nested
-        @DisplayName("** FindAllOrders tests **")
-        class FindAllOrdersTest {
-
-            private FindAllOption option;
-
-            @BeforeEach
-            void setUp() {
-                option = FindAllOption.FIND_ALL;
-            }
-
-            @Test
-            void givenFindAllOrders_whenOrdersNotFound_thenThrowOrderException() {
-
-                when(repository.findAll(client)).thenReturn(Set.of());
-
-                final OrderException e = assertThrows(OrderException.class,
-                        () -> service.findAll(client, option));
-
-                final String expected = format("Orders of client %s not found!", client.getName());
-                assertEquals(expected, e.getMessage());
-
-                verify(repository).findAll(client);
-
-            }
-
-            @Test
-            void givenFindAllOrders_whenOrdersHasBeenFound_thenReturnMappedOrdersToOutputDTO() {
-
-                final OrderOutputDTO expected = new OrderOutputDTO(
-                        client.getName(),
-                        order.getFormattedDate(),
-                        FormatterUtils.formatOrderItems(order.getOrderItems()),
-                        order.getTotal()
-                );
-
-
-                when(repository.findAll(client)).thenReturn(Set.of(order));
-                when(mapper.orderToOutput(order)).thenReturn(expected);
-
-                final List<OrderOutputDTO> orders = new ArrayList<>(service.findAll(client, option));
-
-                assertNotNull(orders);
-                assertFalse(orders.isEmpty());
-                assertEquals(expected, orders.get(0));
-
-                verify(repository).findAll(client);
-                verify(mapper).orderToOutput(order);
-
-            }
-        }
-
-
-        @Nested
-        @DisplayName("** FindByOrderDate order tests with System.Lambda library **")
-        class FindByOrderDateTests {
-
-            private FilterOrderOption option;
-            private String dateInString;
-
-            @BeforeEach
-            void setUp() {
-                option = FilterOrderOption.ORDER_DATE;
-                dateInString = "10/10/2010";
-            }
-
-
-            @Test
-            @SneakyThrows
-            void givenFindByOption_whenOptionIsOrderDateAndOrdersNotFoundByOrderDate_thenThrowOrderException() {
-
-                when(repository.findByOrderDate(eq(client), any(LocalDate.class))).thenReturn(Set.of());
-
-                SystemStubs.withTextFromSystemIn(dateInString)
-                        .execute(() -> {
-                            final OrderException e = assertThrows(OrderException.class,
-                                    () -> service.findByOption(client, option));
-
-                            final String expected = format("Orders not found by %s", option);
-                            assertEquals(expected, e.getMessage());
-
-                            System.setIn(System.in);
-                        });
-
-                verify(repository).findByOrderDate(eq(client), any(LocalDate.class));
-            }
-
-            @Test
-            @SneakyThrows
-            void givenFindByOption_whenOptionIsOrderDateAndOrdersHasBeenFoundByOrderDate_thenReturnSetOfOrders() {
-
-                when(repository.findByOrderDate(eq(client), any(LocalDate.class))).thenReturn(Set.of(order));
-
-                SystemStubs.withTextFromSystemIn(dateInString)
-                        .execute(() -> {
-                            final List<Order> orders = new ArrayList<>(service.findByOption(client, option));
-
-                            assertNotNull(orders);
-                            assertFalse(orders.isEmpty());
-                            assertEquals(order, orders.get(0));
-                        });
-
-                verify(repository).findByOrderDate(eq(client), any(LocalDate.class));
-            }
-        }
-
-        @Nested
-        @DisplayName("** FindByTotalPrice order tests with System.Lambda library **")
-        class FindByTotalPriceTests {
-
-            private FilterOrderOption option;
-            private String totalPrice;
-
-            @BeforeEach
-            void setUp() {
-                option = FilterOrderOption.TOTAL_PRICE;
-                totalPrice = "10.50";
-            }
-
-
-            @SneakyThrows
-            @Test
-            void givenFindByOption_whenOptionIsTotalPriceAndOrdersNotFoundByTotalPrice_thenThrowOrdersException() {
-
-                when(repository.findByTotalPrice(eq(client), any(BigDecimal.class))).thenReturn(Set.of());
-
-                SystemStubs.withTextFromSystemIn(totalPrice)
-                        .execute(() -> {
-                            final OrderException e = assertThrows(OrderException.class,
-                                    () -> service.findByOption(client, option));
-
-                            final String expected = format("Orders not found by %s", option);
-                            assertEquals(expected, e.getMessage());
-                        });
-
-
-                verify(repository).findByTotalPrice(eq(client), any(BigDecimal.class));
-            }
-
-            @Test
-            @SneakyThrows
-            void givenFindByOption_whenOptionIsTotalPriceAndAndOrdersHasBeenFoundByTotalPrice_thenReturnSetOfOrders() {
-
-                when(repository.findByTotalPrice(eq(client), any(BigDecimal.class))).thenReturn(Set.of(order));
-
-                SystemStubs.withTextFromSystemIn(totalPrice)
-                        .execute(() -> {
-                            final List<Order> orders = new ArrayList<>(service.findByOption(client, option));
-
-                            assertNotNull(orders);
-                            assertFalse(orders.isEmpty());
-                            assertEquals(order, orders.get(0));
-                        });
-
-                verify(repository).findByTotalPrice(eq(client), any(BigDecimal.class));
-            }
-        }
-
-        @Nested
-        @DisplayName("** FindByProductName order tests with System.Lambda library **")
-        class FindByProductNameTests {
-
-            private FilterOrderOption option;
-
-
-            @BeforeEach
-            void setUp() {
-                option = FilterOrderOption.PRODUCT_NAME;
-            }
-
-
-            @SneakyThrows
-            @Test
-            void givenFindByOption_whenOptionIsProductNameAndOrdersNotFoundByProductName_thenThrowOrdersException() {
-
-                when(repository.findByProductName(eq(client), any())).thenReturn(Set.of());
-
-                SystemStubs.withTextFromSystemIn("tOmaTO").execute(() -> {
-                    final OrderException e = assertThrows(OrderException.class,
-                            () -> service.findByOption(client, option));
-
-                    final String expected = format("Orders not found by %s", option);
-                    assertEquals(expected, e.getMessage());
-                });
-
-
-                verify(repository).findByProductName(eq(client), any());
-            }
-
-            @Test
-            @SneakyThrows
-            void givenFindByOption_whenOptionIsProductNameAndAndOrdersHasBeenFoundByProductName_thenReturnSetOfOrders() {
-
-                when(repository.findByProductName(eq(client), any())).thenReturn(Set.of(order));
-
-                SystemStubs.withTextFromSystemIn("OniOn").execute(() -> {
-                    final List<Order> orders = new ArrayList<>(service.findByOption(client, option));
-
-                    assertNotNull(orders);
-                    assertFalse(orders.isEmpty());
-                    assertEquals(order, orders.get(0));
-                });
-
-                verify(repository).findByProductName(eq(client), any());
-            }
-
-        }
-
-    }
 
     @Nested
     @DisplayName("SetFilterParamTests with SystemStubs")
@@ -713,56 +471,6 @@ class OrderServiceTest {
                             .orderItems(Set.of(oi))
                             .build()
             );
-        }
-
-        @Test
-        void givenDeleteAll_whenOrdersHasNotBeenDeleted_thenThrowOrderException() {
-
-            doThrow(DatabaseException.class).when(repository).delete(orders);
-
-            final OrderException e = assertThrows(OrderException.class,
-                    () -> service.deleteAll(orders));
-
-            assertNotNull(e.getCause());
-
-            final String expected = format("Error in delete orders: %s", e.getCause().getMessage());
-
-            assertEquals(DatabaseException.class, e.getCause().getClass());
-            assertEquals(expected, e.getMessage());
-
-        }
-
-
-        @Test
-        void givenDeleteAll_whenOrdersHasBeenDeleted_thenReturnDeletedOrdersMappedToOutput() {
-
-            final Order order = new ArrayList<>(orders).get(0);
-
-            final String itemsFormatted = FormatterUtils.formatOrderItems(order.getOrderItems());
-            final String total = order.getTotal();
-
-            doNothing().when(repository).delete(orders);
-
-            when(mapper.orderToOutput(order)).thenReturn(
-                    new OrderOutputDTO(order.getClient().getName(),
-                            order.getFormattedDate(),
-                            itemsFormatted,
-                            total)
-            );
-
-            final Set<OrderOutputDTO> outputs = service.deleteAll(orders);
-
-            assertNotNull(outputs);
-            assertEquals(1, outputs.size());
-
-            final OrderOutputDTO outputDTO = new ArrayList<>(outputs).get(0);
-
-            assertEquals(order.getClient().getName(), outputDTO.getClientName());
-            assertEquals(order.getFormattedDate(), outputDTO.getDateFormatted());
-            assertEquals(itemsFormatted, outputDTO.getItemsFormatted());
-            assertEquals(total, outputDTO.getTotal());
-
-            verify(mapper).orderToOutput(order);
         }
     }
 

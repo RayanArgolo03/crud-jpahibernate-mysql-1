@@ -16,7 +16,7 @@ public final class OrderFilterParam {
 
     LocalDate orderDate;
     BigDecimal totalPrice;
-    String productName;
     Category category;
+    String productName;
 
 }

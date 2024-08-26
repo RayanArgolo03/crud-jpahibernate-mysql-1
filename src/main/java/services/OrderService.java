@@ -62,6 +62,17 @@ public final class OrderService {
                 .collect(Collectors.toSet());
     }
 
+    public Set<Order> findByParams(final Client client) {
+
+        final OrderFilterParam orderFilterParam = this.createOrderFilterParam();
+        if (orderFilterParam == null) throw new OrderException("No parameters to delete orders!");
+
+        final Set<Order> orders = repository.findAllByParams(client, orderFilterParam);
+        if (orders.isEmpty()) throw new OrderException("Orders not found by params!");
+
+        return orders;
+    }
+
     public OrderFilterParam createOrderFilterParam() {
 
         final OrderFilterParam filterParams = new OrderFilterParam();
@@ -143,37 +154,12 @@ public final class OrderService {
         System.out.printf("Replacing %s filter: %s to %s", title, old, neww);
     }
 
-    public Set<Order> findByOption(final Client client, final FilterOrderOption option) {
-
-        final Set<Order> orders = switch (option) {
-
-            case ORDER_DATE -> repository.findByOrderDate(client, this.validateAndFormatDate(
-                    readSimpleString("order date (pattern dd/MM/yyyy with separators!)")
-            ));
-
-            case TOTAL_PRICE -> repository.findByTotalPrice(client, this.validateAndFormatTotalPrice(
-                    readSimpleString("price (with dot and max three decimal places)")
-            ));
-
-            case CATEGORY -> repository.findByCategory(client, readEnum(Category.class));
-
-            case PRODUCT_NAME -> repository.findByProductName(client, this.validateAndFormatProductName(
-                    readSimpleString("product name (no special symbols, at least 3 characters!)")
-            ));
-
-        };
-
-        if (orders.isEmpty()) throw new OrderException(format("Orders not found by %s", option));
-
-        return orders;
-    }
-
     public LocalDate validateAndFormatDate(final String dateInString) {
 
         Objects.requireNonNull(dateInString, "Order date can´t be null!");
 
         try {
-            return LocalDate.parse(dateInString,FormatterUtils.getDATE_FORMATTER());
+            return LocalDate.parse(dateInString, FormatterUtils.getDATE_FORMATTER());
 
         } catch (DateTimeException e) {
             throw new OrderException(format("%s is invalid date!", dateInString));
@@ -274,14 +260,13 @@ public final class OrderService {
         }
     }
 
-    public Set<OrderOutputDTO> deleteAll(final Set<Order> orders) {
+    public int deleteAllByParams(final Client client) {
+
+        final OrderFilterParam orderFilterParam = this.createOrderFilterParam();
+        if (orderFilterParam == null) throw new OrderException("No parameters to delete orders!");
 
         try {
-            repository.delete(orders);
-
-            return orders.stream()
-                    .map(this::mapperToOutput)
-                    .collect(Collectors.toSet());
+            return repository.deleteAllByParams(client, orderFilterParam);
 
         } catch (DatabaseException e) {
             throw new OrderException(format("Error in delete orders: %s", e.getMessage()), e);

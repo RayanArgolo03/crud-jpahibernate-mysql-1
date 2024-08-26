@@ -35,7 +35,7 @@ class OrderRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        manager = new JpaManager("h2");
+        manager = new JpaManager("mariadb");
         repository = new OrderRepositoryImpl(manager);
 
         client = Client.builder().name("abcd").username("abcd").password("abcd").cpf("12112122192")
@@ -118,7 +118,7 @@ class OrderRepositoryTest {
 
         @Test
         void givenFindAllByParams_whenProductNameIsNotNull_thenFindWithProductName() {
-            orderFilterParam.setProductName(product.getName());
+            orderFilterParam.setProductName(product.getName().toLowerCase());
             assertEquals(1, repository.findAllByParams(client, orderFilterParam).size());
         }
 
@@ -132,7 +132,7 @@ class OrderRepositoryTest {
         void givenFindAllByParams_whenAllParamsIsNotNull_thenFindAllByParams() {
 
             orderFilterParam.setCategory(new ArrayList<>(product.getCategories()).get(0));
-            orderFilterParam.setProductName(product.getName());
+            orderFilterParam.setProductName(product.getName().toLowerCase());
             orderFilterParam.setTotalPrice(new BigDecimal("1"));
             orderFilterParam.setOrderDate(order.getCreatedAt().toLocalDate());
 
@@ -233,5 +233,33 @@ class OrderRepositoryTest {
         }
 
     }
+
+
+    @Nested
+    @DisplayName("** DeleteAllByParams order tests **")
+    class DeleteAllByParams {
+
+        private OrderFilterParam orderFilterParam;
+
+        @BeforeEach
+        void setUp() {
+            orderFilterParam = new OrderFilterParam();
+            repository.save(order);
+        }
+
+
+        @Test
+        void givenDeleteAllByParams_whenAllParamsAreNotNull_thenDeleteAllByParams() {
+
+            orderFilterParam.setOrderDate(order.getCreatedAt().toLocalDate());
+            orderFilterParam.setTotalPrice(new BigDecimal("1"));
+            orderFilterParam.setProductName(product.getName().toLowerCase());
+            orderFilterParam.setCategory(Category.FOODS);
+
+            assertEquals(1, repository.deleteAllByParams(client, orderFilterParam));
+
+        }
+    }
+
 }
 

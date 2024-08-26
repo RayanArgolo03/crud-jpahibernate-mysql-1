@@ -6,6 +6,8 @@ import lombok.experimental.FieldDefaults;
 import model.client.Client;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import utils.FormatterUtils;
 
 import java.math.BigDecimal;
@@ -57,6 +59,7 @@ public final class Order {
     Client client;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "id_order")
     Set<OrderItem> orderItems;
 

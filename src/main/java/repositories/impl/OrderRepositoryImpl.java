@@ -15,6 +15,7 @@ import repositories.interfaces.OrderRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -46,63 +47,11 @@ public final class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Set<Order> findAllByParams(final Client client, final OrderFilterParam params) {
+    public Set<Order> findAllByParams(final Client client, final OrderFilterParam orderFilterParam) {
 
-        final List<Predicate> predicates = new ArrayList<>(List.of(
-                builder.equal(root.get("client"), client)
-        ));
+        final Predicate[] predicates = this.createPredicates(query, root, client, orderFilterParam);
 
-        if (params.getOrderDate() != null) {
-            final Expression<LocalDate> createdAtToLocalDate = builder.function("date", LocalDate.class, root.get("createdAt"));
-            predicates.add(builder.equal(createdAtToLocalDate, params.getOrderDate()));
-        }
-
-        //To avoid duplicate joins in other conditions
-        Join<Order, OrderItem> orderItemsTable = null;
-        Join<OrderItem, Product> productTable = null;
-
-        if (params.getTotalPrice() != null) {
-
-            orderItemsTable = this.joinOrderItemsTable();
-            productTable = this.joinProductTable(orderItemsTable);
-
-            final Expression<BigDecimal> totalPrice = builder.sum(
-                    builder.prod(productTable.get("unitPrice"), orderItemsTable.get("quantity"))
-            );
-
-            final Expression<String> substringTotalPrice = builder.substring(
-                    totalPrice.as(String.class), 1, 1
-            );
-
-            final Predicate predicate = builder.like(substringTotalPrice, params.getTotalPrice() + "%");
-
-            query.groupBy(root.get("id"))
-                    .having(predicate);
-        }
-
-        if (params.getProductName() != null) {
-
-            if (orderItemsTable == null) {
-                orderItemsTable = this.joinOrderItemsTable();
-                productTable = this.joinProductTable(orderItemsTable);
-            }
-
-            predicates.add(builder.equal(builder.lower(productTable.get("name")), params.getProductName()));
-        }
-
-        if (params.getCategory() != null) {
-
-            if (orderItemsTable == null) {
-                orderItemsTable = this.joinOrderItemsTable();
-                productTable = this.joinProductTable(orderItemsTable);
-            }
-
-            final Join<Product, Category> categoryTable = productTable.join("categories", JoinType.LEFT);
-
-            predicates.add(builder.equal(categoryTable, params.getCategory()));
-        }
-
-        query.where(predicates.toArray(Predicate[]::new));
+        query.where(predicates);
 
         final Set<Order> orders = new HashSet<>(jpaManager.getEntityManager()
                 .createQuery(query)
@@ -112,7 +61,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
         return orders;
     }
 
-    private Join<Order, OrderItem> joinOrderItemsTable() {
+    private Join<Order, OrderItem> joinOrderItemsTable(final Root<Order> root) {
         return root.join("orderItems", JoinType.LEFT);
     }
 
@@ -169,7 +118,75 @@ public final class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public void delete(final Set<Order> orders) {
-        jpaManager.executeAction((aux) -> orders.forEach(aux::remove));
+    public int deleteAllByParams(final Client client, final OrderFilterParam orderFilterParam) {
+
+        final CriteriaDelete<Order> queryDelete = builder.createCriteriaDelete(Order.class);
+        final Root<Order> rootDelete = queryDelete.from(Order.class);
+
+        final Subquery<Order> deleteSubquery = queryDelete.subquery(Order.class);
+        final Root<Order> rootSubquery = deleteSubquery.from(Order.class);
+
+        final Predicate[] predicates = this.createPredicates(deleteSubquery, rootSubquery, client, orderFilterParam);
+
+        //Set predicates to subquery
+        deleteSubquery.select(rootSubquery).where(predicates);
+
+        queryDelete.where(rootDelete.in(deleteSubquery));
+
+        final AtomicInteger rowsDeleted = new AtomicInteger();
+
+        jpaManager.executeAction((aux) -> rowsDeleted.set(aux.createQuery(queryDelete).executeUpdate()));
+
+        return rowsDeleted.get();
+    }
+
+    private Predicate[] createPredicates(final AbstractQuery<Order> query, final Root<Order> root, final Client client, final OrderFilterParam orderFilterParam) {
+
+        final List<Predicate> predicates = new ArrayList<>(
+                List.of(builder.equal(root.get("client"), client))
+        );
+
+        if (orderFilterParam.getOrderDate() != null) {
+            predicates.add(builder.equal(builder.function("date", LocalDate.class, root.get("createdAt")), orderFilterParam.getOrderDate()));
+        }
+
+        Join<Order, OrderItem> orderItemTable = null;
+        Join<OrderItem, Product> productTable = null;
+
+        if (orderFilterParam.getTotalPrice() != null) {
+
+            orderItemTable = this.joinOrderItemsTable(root);
+            productTable = this.joinProductTable(orderItemTable);
+
+            final Expression<Number> totalPrice = builder.sum(builder.prod(productTable.get("unitPrice"), orderItemTable.get("quantity")));
+            final Expression<String> substringTotalPrice = builder.substring(totalPrice.as(String.class), 1, 1);
+            final Predicate likeTotalPrice = builder.like(substringTotalPrice, orderFilterParam.getTotalPrice() + "%");
+
+            query.groupBy(root).having(likeTotalPrice);
+        }
+
+        if (orderFilterParam.getProductName() != null) {
+
+            if (orderItemTable == null) {
+                orderItemTable = this.joinOrderItemsTable(root);
+                productTable = this.joinProductTable(orderItemTable);
+            }
+
+            predicates.add(builder.equal(builder.lower(productTable.get("name")), orderFilterParam.getProductName()));
+        }
+
+        if (orderFilterParam.getCategory() != null) {
+
+            if (orderItemTable == null) {
+                orderItemTable = this.joinOrderItemsTable(root);
+                productTable = this.joinProductTable(orderItemTable);
+            }
+
+            final Join<Product, Category> categoriesTable = productTable.join("categories", JoinType.LEFT);
+
+            predicates.add(builder.equal(categoriesTable, orderFilterParam.getCategory()));
+        }
+
+        return predicates.toArray(Predicate[]::new);
     }
 }

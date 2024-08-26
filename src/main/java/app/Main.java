@@ -14,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 import mappers.ClientMapper;
 import mappers.OrderMapper;
 import model.client.Client;
-import model.order.Order;
 import repositories.impl.ClientRepositoryImpl;
 import repositories.impl.OrderRepositoryImpl;
 import repositories.impl.ProductRepositoryImpl;
@@ -23,7 +22,6 @@ import services.OrderService;
 import services.ProductService;
 
 import java.util.InputMismatchException;
-import java.util.Set;
 
 import static utils.ReaderUtils.readEnum;
 
@@ -31,6 +29,7 @@ import static utils.ReaderUtils.readEnum;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class Main {
+
     static JpaManager JPA_MANAGER;
     static ClientController CLIENT_CONTROLLER;
     static OrderController ORDER_CONTROLLER;
@@ -40,7 +39,7 @@ public final class Main {
 
         System.out.println("                                     -> INITIALISE Docker Hub and run docker-compose up -d!! <-     \n\n\n");
 
-        JPA_MANAGER = new JpaManager("h2");
+        JPA_MANAGER = new JpaManager("mariadb");
 
         CLIENT_CONTROLLER = new ClientController(
                 new ClientService(new ClientRepositoryImpl(JPA_MANAGER), ClientMapper.INSTANCE)
@@ -69,9 +68,7 @@ public final class Main {
         catch (ProductException e) {
             log.info(e.getMessage());
             PRODUCT_CONTROLLER.addAll();
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Severe error: {}", e.getMessage());
             System.exit(0);
         }
@@ -95,16 +92,13 @@ public final class Main {
                         break loop;
                     }
                 }
-            }
-            catch (InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
                 System.exit(0);
-            }
-            catch (ProductException e) {
+            } catch (ProductException e) {
                 log.error("{}, restart the program! ", e.getMessage());
                 System.exit(0);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
 
@@ -126,11 +120,7 @@ public final class Main {
 
                     case PLACE_AN_ORDER -> ORDER_CONTROLLER.create(client, PRODUCT_CONTROLLER.findAllProducts());
 
-                    case DELETE_ORDERS_PLACED -> {
-                        final Set<Order> orders = ORDER_CONTROLLER.find(client);
-                        ORDER_CONTROLLER.delete(orders).forEach(System.out::println);
-                    }
-
+                    case DELETE_ORDERS_PLACED -> ORDER_CONTROLLER.delete(client);
 
                     case LOGOUT -> {
                         log.info("{} has left the system!", client.getUsername());
@@ -138,16 +128,13 @@ public final class Main {
                     }
                 }
 
-            }
-            catch (ProductException e) {
+            } catch (ProductException e) {
                 log.error("{}, restart the program! ", e.getMessage());
                 System.exit(0);
-            }
-            catch (InputMismatchException | IndexOutOfBoundsException e) {
+            } catch (InputMismatchException | IndexOutOfBoundsException e) {
                 log.error("Input data error, stopping the program.. Thanks for the use");
                 System.exit(0);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
 
